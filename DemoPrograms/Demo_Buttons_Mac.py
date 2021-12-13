@@ -28,13 +28,10 @@ def show_win():
         window.set_alpha(i/100)
         time.sleep(.01)
 
-    while True:     # Event Loop
+    while True: # Event Loop
         event, values = window.read()
-        if event == sg.WIN_CLOSED or event == '-exit-':
+        if event in [sg.WIN_CLOSED, '-exit-']:
             break
-        if event == '-minimize-':
-            # window.Minimize()     # cannot minimize a window with no titlebar
-            pass
         print(event, values)
 
 

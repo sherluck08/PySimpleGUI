@@ -157,7 +157,12 @@ def main(location):
             sg.user_settings_set_entry('-show refresh-', True)
         elif event == 'Save Location':
             sg.user_settings_set_entry('-location-', window.current_location())
-            sg.popup_notify(f'Saved your current window location:', window.current_location(), title='Saved Location')
+            sg.popup_notify(
+                'Saved your current window location:',
+                window.current_location(),
+                title='Saved Location',
+            )
+
         elif event == 'Hide Refresh Info':
             window['-REFRESHED-'].update(visible=False)
             sg.user_settings_set_entry('-show refresh-', False)

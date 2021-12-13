@@ -21,7 +21,7 @@ def make_window(light_mode):
     LIGHT_GRAY = '#e0e0e0'
     BLUE_BUTTON_COLOR = '#FFFFFF on #2196f2'
     GREEN_BUTTON_COLOR ='#FFFFFF on #00c851'
-    LIGHT_GRAY_BUTTON_COLOR = f'#212021 on #e0e0e0'
+    LIGHT_GRAY_BUTTON_COLOR = '#212021 on #e0e0e0'
     DARK_GRAY_BUTTON_COLOR = '#e0e0e0 on #212021'
 
     layout = [[sg.Col([[sg.T('Welcome to my App')],
@@ -43,9 +43,7 @@ def make_window(light_mode):
                            text_color='white' if light_mode else LIGHT_GRAY,
                            k='-TITLEBAR-')]] + layout
 
-    window = sg.Window('Window Title', layout)
-
-    return window
+    return sg.Window('Window Title', layout)
 
 
 def main():
@@ -53,9 +51,9 @@ def main():
     window = make_window(light_mode)
     show_animation = False
     # LOADING_GIF = sg.DEFAULT_BASE64_LOADING_GIF
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read(timeout=100)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event.startswith('-TOGGLE'):
             state = window[event].metadata = not window[event].metadata

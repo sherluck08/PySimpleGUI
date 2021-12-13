@@ -80,12 +80,44 @@ def shipping_status(tracking_num):
 def package_row(item_num, tracking_num=''):
     carrier_list = ('FedEx', 'USPS')
     tracking_numbers = sg.user_settings_get_entry('-packages-', [])
-    row =  [sg.pin(sg.Col([[sg.B(sg.SYMBOL_X, border_width=0, button_color=(sg.theme_text_color(), sg.theme_background_color()), k=('-DEL-', item_num), tooltip='Delete this item'),
-                            sg.Combo(tracking_numbers, default_value=tracking_num, size=(20, 1), key=('-ID-', item_num)),
-                            sg.In(size=(20,1), k=('-DESC-', item_num)),
-                 # sg.Input(default_text=tracking_num, s=(20,1), key=('-ID-', item_num), tooltip='Enter your package ID'),
-                            sg.Combo(carrier_list, default_value=carrier_list[0], readonly=True, s=(10,10), k=('-CARRIER-', item_num), tooltip='Not implemented'), sg.T(size=(15,1), k=('-STATUS-', item_num))]], k=('-ROW-', item_num)))]
-    return row
+    return [
+        sg.pin(
+            sg.Col(
+                [
+                    [
+                        sg.B(
+                            sg.SYMBOL_X,
+                            border_width=0,
+                            button_color=(
+                                sg.theme_text_color(),
+                                sg.theme_background_color(),
+                            ),
+                            k=('-DEL-', item_num),
+                            tooltip='Delete this item',
+                        ),
+                        sg.Combo(
+                            tracking_numbers,
+                            default_value=tracking_num,
+                            size=(20, 1),
+                            key=('-ID-', item_num),
+                        ),
+                        sg.In(size=(20, 1), k=('-DESC-', item_num)),
+                        # sg.Input(default_text=tracking_num, s=(20,1), key=('-ID-', item_num), tooltip='Enter your package ID'),
+                        sg.Combo(
+                            carrier_list,
+                            default_value=carrier_list[0],
+                            readonly=True,
+                            s=(10, 10),
+                            k=('-CARRIER-', item_num),
+                            tooltip='Not implemented',
+                        ),
+                        sg.T(size=(15, 1), k=('-STATUS-', item_num)),
+                    ]
+                ],
+                k=('-ROW-', item_num),
+            )
+        )
+    ]
 
 
 def refresh(window: sg.Window):
@@ -115,9 +147,7 @@ def add_packages_to_window(window: sg.Window):
             window.metadata += 1
             window.extend_layout(window['-TRACKING SECTION-'], [package_row(window.metadata)])
             in_elem = window.find_element(('-ID-', window.metadata), silent_on_error=True)
-            in_elem.update(package[0])
-        else:
-            in_elem.update(package[0])
+        in_elem.update(package[0])
         desc_elem = window.find_element(('-DESC-', i), silent_on_error=True)
         if not isinstance(desc_elem, sg.ErrorElement):
             desc_elem.update(package[1])
@@ -149,7 +179,7 @@ def main():
     refresh(window)
     while True:
         event, values = window.read(timeout=1000*60*60)     # wake every hour
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Add Package':
             window.metadata += 1
@@ -171,15 +201,14 @@ def main():
         elif event in [str(x) for x in range(1,11)]:
             window.set_alpha(int(event)/10)
             sg.user_settings_set_entry('-alpha-', int(event)/10)
-        if isinstance(event, tuple):
-            if event[0] == '-DEL-':
-                window[('-ROW-', event[1])].update(visible=False)
-                packages: list = sg.user_settings_get_entry('-packages-', [])
-                try:
-                    packages.remove(window[('-ID-', event[1])].get())
-                except:
-                    pass
-                sg.user_settings_set_entry('-packages-', packages)
+        if isinstance(event, tuple) and event[0] == '-DEL-':
+            window[('-ROW-', event[1])].update(visible=False)
+            packages: list = sg.user_settings_get_entry('-packages-', [])
+            try:
+                packages.remove(window[('-ID-', event[1])].get())
+            except:
+                pass
+            sg.user_settings_set_entry('-packages-', packages)
     window.close()
 
 

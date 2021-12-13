@@ -22,7 +22,7 @@ def get_num_issues():
     findopen = re.compile(r"\d+ Open")
     # get number of open issues
     number_open_string = findopen.search(str(soup)).group(0)
-    num_open_issues = number_open_string[0:number_open_string.index(' ')]
+    num_open_issues = number_open_string[:number_open_string.index(' ')]
     # find the first issue in the list by earing for "issue-id-XXXX"
     find_first_issue = re.compile(r'issue-id-\d+')
     first_issue_string = find_first_issue.search(str(soup)).group(0)

@@ -64,15 +64,15 @@ def main():
         window, event, values = sg.read_all_windows()
         print(window.Title, event, values)
 
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event.startswith('Start'):
             threading.Thread(target=the_thread, args=(main_window, window_prog), daemon=True).start()
         if event == THREAD_EVENT:
-            cp(f'Thread Event ', colors='white on blue', end='')
+            cp('Thread Event ', colors='white on blue', end='')
             cp(f'{values[THREAD_EVENT]}', colors='white on red')
         if event == PROGRESS_EVENT:
-            cp(f'Progress Event from thread ', colors='white on purple', end='')
+            cp('Progress Event from thread ', colors='white on purple', end='')
             cp(f'{values[PROGRESS_EVENT]}', colors='white on red')
             window_prog['-PROG-'].update(values[event] % 10 + 1)  # type: sg.ProgressBar.update()
         if event == 'Dummy':

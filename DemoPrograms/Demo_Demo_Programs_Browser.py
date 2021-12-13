@@ -86,9 +86,7 @@ def get_demo_path():
     :return: Path to list of files using the user settings for this file.  Returns folder of this file if not found
     :rtype: str
     """
-    demo_path = sg.user_settings_get_entry('-demos folder-', os.path.dirname(__file__))
-
-    return demo_path
+    return sg.user_settings_get_entry('-demos folder-', os.path.dirname(__file__))
 
 
 def get_global_editor():
@@ -218,7 +216,7 @@ def find_in_file(string, demo_files_dict, regex=False, verbose=False, window=Non
     for file in demo_files_dict:
         try:
             full_filename = demo_files_dict[file]
-            if not demo_files_dict == get_file_list_dict():
+            if demo_files_dict != get_file_list_dict():
                 full_filename = full_filename[0]
             matches = None
 
@@ -245,34 +243,32 @@ def find_in_file(string, demo_files_dict, regex=False, verbose=False, window=Non
                             matches = re.search(br'(?i)^' + bytes(".*("+re.escape(string.lower()) + ").*$", 'utf-8'), s, re.MULTILINE)
                         else:
                             matches = re.finditer(br'(?i)^' + bytes(".*("+re.escape(string.lower()) + ").*$", 'utf-8'), s, re.MULTILINE)
+                    elif (show_first_match):
+                        matches = re.search(br'^' + bytes(".*("+re.escape(string) + ").*$", 'utf-8'), s, re.MULTILINE)
                     else:
-                        if (show_first_match):
-                            matches = re.search(br'^' + bytes(".*("+re.escape(string) + ").*$", 'utf-8'), s, re.MULTILINE)
-                        else:
-                            matches = re.finditer(br'^' + bytes(".*("+re.escape(string) + ").*$", 'utf-8'), s, re.MULTILINE)
+                        matches = re.finditer(br'^' + bytes(".*("+re.escape(string) + ").*$", 'utf-8'), s, re.MULTILINE)
                     if matches:
+                        match_array = []
                         if show_first_match:
                             file_list.append(file)
                             num_files += 1
-                            match_array = []
                             match_array.append(matches.group(0).decode('utf-8'))
                             matched_dict[full_filename] = match_array
                         else:
                             # We need to do this because strings are "falsy" in Python, but empty matches still return True...
                             append_file = False
-                            match_array = []
                             for match_ in matches:
                                 match_str = match_.group(0).decode('utf-8')
                                 if match_str:
                                     match_array.append(match_str)
-                                    if append_file == False:
+                                    if not append_file:
                                         append_file = True
                             if append_file:
                                 file_list.append(file)
                                 num_files += 1
                                 matched_dict[full_filename] = match_array
 
-                # del matches
+                            # del matches
         except ValueError:
             del matches
         except Exception as e:
@@ -284,7 +280,7 @@ def find_in_file(string, demo_files_dict, regex=False, verbose=False, window=Non
 
     file_lines_dict = {}
     if not regex:
-        for key in matched_dict:
+        for key, value in matched_dict.items():
             head, tail = os.path.split(key)
             # Tails. Don't wanna put Washington in places he doesn't want to be.
             file_array_old = [key]
@@ -293,7 +289,7 @@ def find_in_file(string, demo_files_dict, regex=False, verbose=False, window=Non
             if (verbose):
                 sg.cprint(f"{tail}:", c = 'white on green')
             try:
-                for _match in matched_dict[key]:
+                for _match in value:
                     line_num_match = get_line_number(key, _match)
                     file_array_new.append(line_num_match)
                     if (verbose):
@@ -488,9 +484,8 @@ def main():
             window['-FIND NUMBER-'].update('')
             window['-FIND-'].update('')
             window['-FIND RE-'].update('')
-        elif event == '-FIND-' or event == '-FIRST MATCH ONLY-' or event == '-VERBOSE-' or event == '-FIND RE-':
+        elif event in ['-FIND-', '-FIRST MATCH ONLY-', '-VERBOSE-', '-FIND RE-']:
             is_ignore_case = values['-IGNORE CASE-']
-            old_ignore_case = False
             current_typed_value = str(values['-FIND-'])
             if len(values['-FIND-']) == 1:
                 window[ML_KEY].update('')
@@ -499,16 +494,15 @@ def main():
             if values['-VERBOSE-']:
                 window[ML_KEY].update('')
             if values['-FIND-']:
+                old_ignore_case = False
                 if find_in_file.old_file_list is None or old_typed_value is None or old_ignore_case is not is_ignore_case:
-                    # New search.
-                    old_typed_value = current_typed_value
                     file_list = find_in_file(values['-FIND-'], get_file_list_dict(), verbose=values['-VERBOSE-'], window=window, ignore_case=is_ignore_case, show_first_match=values['-FIRST MATCH ONLY-'])
-                elif current_typed_value.startswith(old_typed_value) and old_ignore_case is is_ignore_case:
-                    old_typed_value = current_typed_value
+                elif current_typed_value.startswith(old_typed_value):
                     file_list = find_in_file(values['-FIND-'], find_in_file.old_file_list, verbose=values['-VERBOSE-'], window=window, ignore_case=is_ignore_case, show_first_match=values['-FIRST MATCH ONLY-'])
                 else:
-                    old_typed_value = current_typed_value
                     file_list = find_in_file(values['-FIND-'], get_file_list_dict(), verbose=values['-VERBOSE-'], window=window, ignore_case=is_ignore_case, show_first_match=values['-FIRST MATCH ONLY-'])
+                # New search.
+                old_typed_value = current_typed_value
                 window['-DEMO LIST-'].update(sorted(file_list))
                 window['-FIND NUMBER-'].update(f'{len(file_list)} files')
                 window['-FILTER NUMBER-'].update('')
@@ -587,9 +581,7 @@ try:
 except:
     def execute_command_subprocess(command, *args, wait=False, cwd=None):
         if running_linux():
-            arg_string = ''
-            for arg in args:
-                arg_string += ' ' + str(arg)
+            arg_string = ''.join(' ' + str(arg) for arg in args)
             sp = subprocess.Popen(str(command) + arg_string, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
         else:
             expanded_args = ' '.join(args)

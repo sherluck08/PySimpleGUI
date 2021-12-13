@@ -63,10 +63,6 @@ def ShowMeTheButtons():
         print(button)
         if button in ('-close-', 'Exit') or button is None:
             break       # exit button clicked
-        elif button == '-timer-':
-            pass        # add your call to launch a timer program
-        elif button == '-cpu-':
-            pass        # add your call to launch a CPU measuring utility
 
 
 if __name__ == '__main__':

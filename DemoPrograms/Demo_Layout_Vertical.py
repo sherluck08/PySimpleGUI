@@ -20,10 +20,7 @@ def top_align_layout(layout):
     :param layout: List[List[sg.Element]] The layout to justify
     :return: List[List[sg.Element]]  The new layout that is all top justified
     """
-    new_layout = []
-    for row in layout:
-        new_layout.append(sg.vtop(row))
-    return new_layout
+    return [sg.vtop(row) for row in layout]
 
 
 def main():

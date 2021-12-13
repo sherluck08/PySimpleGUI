@@ -69,14 +69,26 @@ set_plot(amp, function)
 #use Tabs - one for options, one for canvas to be displayed
 #set spinner for amplitude and combo for function type
 
-tab1_layout = [[sg.Text('Select Amplitude and trig function type', font = ('Calibri', 18, 'bold'))],
-               [sg.Spin([sz for sz in range (1,5)], initial_value =1, size = (2,1), key = '_spin_'),
-                sg.Text('Amplitude', size = (10, 1), font = ('Calibri', 12, 'bold'))],
-               [sg.InputCombo(['sine', 'cosine'], size = (8, 4), key = '_function_'),
-                sg.Text('Function', size = (10, 1),font = ('Calibri', 12, 'bold'))],
-               [sg.ReadButton('Redraw Plot')],
-               [sg.Text('', size = (2, 25))]]
-               
+tab1_layout = [
+    [
+        sg.Text(
+            'Select Amplitude and trig function type',
+            font=('Calibri', 18, 'bold'),
+        )
+    ],
+    [
+        sg.Spin(list(range(1, 5)), initial_value=1, size=(2, 1), key='_spin_'),
+        sg.Text('Amplitude', size=(10, 1), font=('Calibri', 12, 'bold')),
+    ],
+    [
+        sg.InputCombo(['sine', 'cosine'], size=(8, 4), key='_function_'),
+        sg.Text('Function', size=(10, 1), font=('Calibri', 12, 'bold')),
+    ],
+    [sg.ReadButton('Redraw Plot')],
+    [sg.Text('', size=(2, 25))],
+]
+
+
 tab2_layout = [[sg.Text('Plot Test - PySimpleGUI and Matplotlib and options', font = ('Calibri', 18, 'bold'))],
           [sg.Canvas(size = (figure_w, figure_h), key = '_canvas_')],
           [sg.OK(pad=((figure_w / 2, 0), 3), size=(6, 2))]]
@@ -93,7 +105,7 @@ while True:
         function = value['_function_']
         set_plot(amp,function)
         fig_photo = draw_figure(window.FindElement('_canvas_').TKCanvas, fig)
-        
+
     if button is None:   
         break
 

@@ -75,7 +75,7 @@ while True:
     elif event == '-GRAPH-':
         direction = 'left' if values['-GRAPH-'][0] < (G_SIZE[0] // 2) else 'right'
 
-    for i in range(G_SIZE[0]//move_amount):
+    for _ in range(G_SIZE[0]//move_amount):
         graph.move_figure(id, -move_amount if direction == 'left' else move_amount, 0)
         window.read(timeout=0)
     graph.delete_figure(id)

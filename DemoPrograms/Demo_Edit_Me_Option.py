@@ -29,7 +29,7 @@ window = sg.Window('Edit Me Right Click Menu Demo', layout, right_click_menu=[['
 
 while True:  # Event Loop
     event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     if event == 'Edit Me':
         sg.execute_editor(__file__)

@@ -7,25 +7,47 @@ sg.ChangeLookAndFeel('BlueMono')
 
 dirname, filename = os.path.split(os.path.abspath(__file__))
 pathname = os.path.join(dirname , 'Names.txt')           
-                         
+
 #Get data from file
 names = [line.strip() for line in open(pathname)]
 sorted_names = names[:]
 sorted_names.sort()
 
-tab1_layout =[[sg.Text('Linear Search Demo', font =('Calibri', 14, 'bold'))],
-        [sg.Listbox(values =[n for n in names], size = (15, 12),font = ('Calibri', 12), background_color ='White',key = '_display1_')],
-         [sg.Text('_'*15,font = ('Calibri', 12))],
-         [sg.Text('Enter name to search for:')],
-         [sg.InputText(size = (18,1), key = '_linear_')],
-          [sg.ReadButton('Linear Search', size = (15,1))]]
+tab1_layout = [
+    [sg.Text('Linear Search Demo', font=('Calibri', 14, 'bold'))],
+    [
+        sg.Listbox(
+            values=list(names),
+            size=(15, 12),
+            font=('Calibri', 12),
+            background_color='White',
+            key='_display1_',
+        )
+    ],
+    [sg.Text('_' * 15, font=('Calibri', 12))],
+    [sg.Text('Enter name to search for:')],
+    [sg.InputText(size=(18, 1), key='_linear_')],
+    [sg.ReadButton('Linear Search', size=(15, 1))],
+]
 
-tab2_layout = [[sg.Text('Binary Search Demo', font =('Calibri', 14, 'bold'))],
-        [sg.Listbox(values =[n for n in sorted_names], size = (15, 12),font = ('Calibri', 12), background_color ='White',key = '_display2_')],
-         [sg.Text('_'*18,font = ('Calibri', 12))],
-         [sg.Text('Enter name to search for:')],
-         [sg.InputText(size = (18,1), key = '_binary_')],
-          [sg.ReadButton('Binary Search', size = (15,1))]]
+
+tab2_layout = [
+    [sg.Text('Binary Search Demo', font=('Calibri', 14, 'bold'))],
+    [
+        sg.Listbox(
+            values=list(sorted_names),
+            size=(15, 12),
+            font=('Calibri', 12),
+            background_color='White',
+            key='_display2_',
+        )
+    ],
+    [sg.Text('_' * 18, font=('Calibri', 12))],
+    [sg.Text('Enter name to search for:')],
+    [sg.InputText(size=(18, 1), key='_binary_')],
+    [sg.ReadButton('Binary Search', size=(15, 1))],
+]
+
 
 layout = [
     [sg.TabGroup([[sg.Tab('Linear Search', tab1_layout),sg.Tab('Binary Search', tab2_layout)]])]]
@@ -69,10 +91,9 @@ def binary_search():
 
 while True:
     button, value = window.Read()
-    if button is not None:
-        if button == 'Linear Search':
-            linear_search()
-        if button == 'Binary Search':
-            binary_search()
-    else:
+    if button is None:
         break
+    if button == 'Linear Search':
+        linear_search()
+    if button == 'Binary Search':
+        binary_search()

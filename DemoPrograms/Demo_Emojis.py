@@ -9,6 +9,7 @@
 """
 
 
+
 import PySimpleGUI as sg
 
 layout = [[sg.Text('The PySimpleGUI Helpers', font='_ 20')],
@@ -23,7 +24,7 @@ window = sg.Window('The PySimpleGUI Helpers', layout, icon=sg.EMOJI_BASE64_HAPPY
 while True:             # Event Loop
     event, values = window.read()
     print(event, values)
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     if event == 'Bad Key':
         elem = window['-IM-']

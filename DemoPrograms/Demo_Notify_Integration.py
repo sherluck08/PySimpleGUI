@@ -69,9 +69,9 @@ def main():
 
     window = sg.Window('My PySimpleGUI Application', layout)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Show Notification':
             notify_popout(title=window.Title,  message=values['-IN-'], app_name=window.Title)

@@ -534,7 +534,7 @@ class Combo(Element):
         # self.InitializeAsDisabled = disabled
         self.Disabled = disabled
         self.Readonly = readonly
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.VisibleItems = visible_items
         self.AutoComplete = auto_complete
@@ -591,7 +591,7 @@ class OptionMenu(Element):
         self.DefaultValue = default_value
         self.TKOptionMenu = None
         self.Disabled = disabled
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
 
         super().__init__(ELEM_TYPE_INPUT_OPTION_MENU, size=size, auto_size_text=auto_size_text, background_color=bg,
@@ -601,7 +601,7 @@ class OptionMenu(Element):
         if values is not None:
             self.Values = values
         if self.Values is not None:
-            for index, v in enumerate(self.Values):
+            for v in self.Values:
                 if v == value:
                     try:
                         self.TKStringVar.set(value)
@@ -664,7 +664,7 @@ class Listbox(Element):
             self.SelectMode = SELECT_MODE_CONTIGUOUS
         else:
             self.SelectMode = DEFAULT_LISTBOX_SELECT_MODE
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.Widget = None          # type: remi.gui.ListView
         tsize = size                # convert tkinter size to pixels
@@ -784,7 +784,7 @@ class Checkbox(Element):
         self.Text = text
         self.InitialState = default
         self.Disabled = disabled
-        self.TextColor = text_color if text_color else DEFAULT_TEXT_COLOR
+        self.TextColor = text_color or DEFAULT_TEXT_COLOR
         self.ChangeSubmits = change_submits or enable_events
         self.Widget = None      # type: remi.gui.CheckBox
 
@@ -848,7 +848,7 @@ class Spin(Element):
         self.DefaultValue = initial_value or values[0]
         self.ChangeSubmits = change_submits or enable_events
         self.Disabled = disabled
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.CurrentValue = self.DefaultValue
         self.ReadOnly = readonly
@@ -896,7 +896,7 @@ class Multiline(Element):
         '''
         self.DefaultText = default_text
         self.EnterSubmits = enter_submits
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         self.Focus = focus
         self.do_not_clear = do_not_clear
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
@@ -918,22 +918,23 @@ class Multiline(Element):
         self.ParentForm.MessageQueue.put(self.ParentForm.LastButtonClicked)
 
     def Update(self, value=None, disabled=None, append=False, background_color=None, text_color=None, font=None, visible=None, autoscroll=None):
-            if value is not None and not append:
+        if value is not None:
+            if not append:
                 self.Widget.set_value(value)
-            elif value is not None and append:
+            else:
                 text = self.Widget.get_value() + str(value)
                 self.Widget.set_value(text)
-            # if background_color is not None:
-            #     self.WxTextCtrl.SetBackgroundColour(background_color)
-            # if text_color is not None:
-            #     self.WxTextCtrl.SetForegroundColour(text_color)
-            # if font is not None:
-            #     self.WxTextCtrl.SetFont(font)
-            # if disabled:
-            #     self.WxTextCtrl.Enable(True)
-            # elif disabled is False:
-            #     self.WxTextCtrl.Enable(False)
-            super().Update(self.Widget, background_color=background_color, text_color=text_color, font=font, visible=visible)
+        # if background_color is not None:
+        #     self.WxTextCtrl.SetBackgroundColour(background_color)
+        # if text_color is not None:
+        #     self.WxTextCtrl.SetForegroundColour(text_color)
+        # if font is not None:
+        #     self.WxTextCtrl.SetFont(font)
+        # if disabled:
+        #     self.WxTextCtrl.Enable(True)
+        # elif disabled is False:
+        #     self.WxTextCtrl.Enable(False)
+        super().Update(self.Widget, background_color=background_color, text_color=text_color, font=font, visible=visible)
 
 
     def print(self, *args, end=None, sep=None, text_color=None, background_color=None):
@@ -982,7 +983,7 @@ class MultilineOutput(Element):
         '''
         self.DefaultText = default_text
         self.EnterSubmits = enter_submits
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         self.Focus = focus
         self.do_not_clear = do_not_clear
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
@@ -1001,12 +1002,13 @@ class MultilineOutput(Element):
 
     def Update(self, value=None, disabled=None, append=False, background_color=None, text_color=None, font=None, visible=None, autoscroll=None):
         autoscroll = self.Autoscroll if autoscroll is None else autoscroll
-        if value is not None and not append:
-            self.Widget.set_value(str(value))
-            self.CurrentValue = str(value)
-        elif value is not None and append:
-            self.CurrentValue = self.CurrentValue + str(value)
-            self.Widget.set_value(self.CurrentValue)
+        if value is not None:
+            if not append:
+                self.Widget.set_value(str(value))
+                self.CurrentValue = str(value)
+            else:
+                self.CurrentValue = self.CurrentValue + str(value)
+                self.Widget.set_value(self.CurrentValue)
         self.Widget._set_updated()
         app = self.ParentForm.App
 
@@ -1061,7 +1063,7 @@ class Text(Element):
         :param size_px:
         """
         self.DisplayText = str(text)
-        self.TextColor = text_color if text_color else DEFAULT_TEXT_COLOR
+        self.TextColor = text_color or DEFAULT_TEXT_COLOR
         self.Justification = justification
         self.Relief = relief
         self.ClickSubmits = click_submits or enable_events
@@ -1078,8 +1080,21 @@ class Text(Element):
         self.Disabled = False
         self.Widget = None      #type: remi.gui.Label
 
-        super().__init__(ELEM_TYPE_TEXT, pixelsize, auto_size_text, background_color=bg, font=font if font else DEFAULT_FONT,
-                         text_color=self.TextColor, pad=pad, key=key, tooltip=tooltip, size_px=size_px, visible=visible, metadata=metadata)
+        super().__init__(
+            ELEM_TYPE_TEXT,
+            pixelsize,
+            auto_size_text,
+            background_color=bg,
+            font=font or DEFAULT_FONT,
+            text_color=self.TextColor,
+            pad=pad,
+            key=key,
+            tooltip=tooltip,
+            size_px=size_px,
+            visible=visible,
+            metadata=metadata,
+        )
+
         return
 
     def Update(self, value=None, background_color=None, text_color=None, font=None, visible=None):
@@ -1112,7 +1127,7 @@ class Output(Element):
         :param tooltip:
         :param key:
         '''
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         # fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         fg = text_color if text_color is not None else 'black' if DEFAULT_INPUT_TEXT_COLOR == COLOR_SYSTEM_DEFAULT else DEFAULT_INPUT_TEXT_COLOR
         self.Disabled = disabled
@@ -1125,12 +1140,13 @@ class Output(Element):
 
 
     def Update(self, value=None, disabled=None, append=False, background_color=None, text_color=None, font=None, visible=None):
-        if value is not None and not append:
-            self.Widget.set_value(str(value))
-            self.CurrentValue = str(value)
-        elif value is not None and append:
-            self.CurrentValue = self.CurrentValue + '\n' + str(value)
-            self.Widget.set_value(self.CurrentValue)
+        if value is not None:
+            if not append:
+                self.Widget.set_value(str(value))
+                self.CurrentValue = str(value)
+            else:
+                self.CurrentValue = self.CurrentValue + '\n' + str(value)
+                self.Widget.set_value(self.CurrentValue)
         self.Widget._set_updated()
         app = self.ParentForm.App
         if hasattr(app, "websockets"):
@@ -1180,7 +1196,7 @@ class Button(Element):
         self.TKButton = None
         self.Target = target
         self.ButtonText = str(button_text)
-        self.ButtonColor = button_color if button_color else DEFAULT_BUTTON_COLOR
+        self.ButtonColor = button_color or DEFAULT_BUTTON_COLOR
         self.TextColor = self.ButtonColor[0]
         self.BackgroundColor = self.ButtonColor[1]
         self.ImageFilename = image_filename
@@ -1242,64 +1258,53 @@ class Button(Element):
             except:
                 pass
         filetypes = (("ALL Files", "*"),) if self.FileTypes is None else self.FileTypes
-        if self.BType == BUTTON_TYPE_BROWSE_FOLDER:                     # Browse Folder
+        if self.BType == BUTTON_TYPE_BROWSE_FOLDER:                 # Browse Folder
             wx_types = convert_tkinter_filetypes_to_wx(self.FileTypes)
             if self.InitialFolder:
                 dialog = wx.DirDialog(self.ParentForm.MasterFrame, style=wx.FD_OPEN)
             else:
                 dialog = wx.DirDialog(self.ParentForm.MasterFrame)
-            folder_name = ''
-            if dialog.ShowModal() == wx.ID_OK:
-                folder_name = dialog.GetPath()
+            folder_name = dialog.GetPath() if dialog.ShowModal() == wx.ID_OK else ''
             if folder_name != '':
                 if target_element.Type == ELEM_TYPE_BUTTON:
                     target_element.FileOrFolderName = folder_name
                 else:
                     target_element.Update(folder_name)
-        elif self.BType == BUTTON_TYPE_BROWSE_FILE:                     # Browse File
+        elif self.BType == BUTTON_TYPE_BROWSE_FILE:                 # Browse File
             qt_types = convert_tkinter_filetypes_to_wx(self.FileTypes)
             if self.InitialFolder:
                 dialog = wx.FileDialog(self.ParentForm.MasterFrame,defaultDir=self.InitialFolder, wildcard=qt_types, style=wx.FD_OPEN)
             else:
                 dialog = wx.FileDialog(self.ParentForm.MasterFrame, wildcard=qt_types, style=wx.FD_OPEN)
             file_name = ''
-            if dialog.ShowModal() == wx.ID_OK:
-                file_name = dialog.GetPath()
-            else:
-                file_name = ''
+            file_name = dialog.GetPath() if dialog.ShowModal() == wx.ID_OK else ''
             if file_name != '':
                 if target_element.Type == ELEM_TYPE_BUTTON:
                     target_element.FileOrFolderName = file_name
                 else:
                     target_element.Update(file_name)
-        elif self.BType == BUTTON_TYPE_BROWSE_FILES:                    # Browse Files
+        elif self.BType == BUTTON_TYPE_BROWSE_FILES:                # Browse Files
             qt_types = convert_tkinter_filetypes_to_wx(self.FileTypes)
             if self.InitialFolder:
                 dialog = wx.FileDialog(self.ParentForm.MasterFrame,defaultDir=self.InitialFolder, wildcard=qt_types, style=wx.FD_MULTIPLE)
             else:
                 dialog = wx.FileDialog(self.ParentForm.MasterFrame, wildcard=qt_types, style=wx.FD_MULTIPLE)
             file_names = ''
-            if dialog.ShowModal() == wx.ID_OK:
-                file_names = dialog.GetPaths()
-            else:
-                file_names = ''
+            file_names = dialog.GetPaths() if dialog.ShowModal() == wx.ID_OK else ''
             if file_names != '':
                 file_names = BROWSE_FILES_DELIMITER.join(file_names)
                 if target_element.Type == ELEM_TYPE_BUTTON:
                     target_element.FileOrFolderName = file_names
                 else:
                     target_element.Update(file_names)
-        elif self.BType == BUTTON_TYPE_SAVEAS_FILE:                     # Save As File
+        elif self.BType == BUTTON_TYPE_SAVEAS_FILE:                 # Save As File
             qt_types = convert_tkinter_filetypes_to_wx(self.FileTypes)
             if self.InitialFolder:
                 dialog = wx.FileDialog(self.ParentForm.MasterFrame,defaultDir=self.InitialFolder, wildcard=qt_types, style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
             else:
                 dialog = wx.FileDialog(self.ParentForm.MasterFrame, wildcard=qt_types, style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
             file_name = ''
-            if dialog.ShowModal() == wx.ID_OK:
-                file_name = dialog.GetPath()
-            else:
-                file_name = ''
+            file_name = dialog.GetPath() if dialog.ShowModal() == wx.ID_OK else ''
             if file_name != '':
                 if target_element.Type == ELEM_TYPE_BUTTON:
                     target_element.FileOrFolderName = file_name
@@ -1384,11 +1389,7 @@ Butt = Button
 
 
 def convert_tkinter_filetypes_to_wx(filetypes):
-    wx_filetypes = ''
-    for item in filetypes:
-        filetype = item[0] + ' (' + item[1] + ')|'+ item[1]
-        wx_filetypes += filetype
-    return wx_filetypes
+    return ''.join(item[0] + ' (' + item[1] + ')|'+ item[1] for item in filetypes)
 
 
 
@@ -1417,11 +1418,11 @@ class ProgressBar(Element):
         self.TKProgressBar = None
         self.Cancelled = False
         self.NotRunning = True
-        self.Orientation = orientation if orientation else DEFAULT_METER_ORIENTATION
+        self.Orientation = orientation or DEFAULT_METER_ORIENTATION
         self.BarColor = bar_color
-        self.BarStyle = style if style else DEFAULT_PROGRESS_BAR_STYLE
-        self.BorderWidth = border_width if border_width else DEFAULT_PROGRESS_BAR_BORDER_WIDTH
-        self.Relief = relief if relief else DEFAULT_PROGRESS_BAR_RELIEF
+        self.BarStyle = style or DEFAULT_PROGRESS_BAR_STYLE
+        self.BorderWidth = border_width or DEFAULT_PROGRESS_BAR_BORDER_WIDTH
+        self.Relief = relief or DEFAULT_PROGRESS_BAR_RELIEF
         self.BarExpired = False
         super().__init__(ELEM_TYPE_PROGRESS_BAR, size=size, auto_size_text=auto_size_text, key=key, pad=pad)
 
@@ -1429,15 +1430,6 @@ class ProgressBar(Element):
     def UpdateBar(self, current_count, max=None):
         print('*** NOT IMPLEMENTED ***')
         return
-        if self.ParentForm.TKrootDestroyed:
-            return False
-        self.TKProgressBar.Update(current_count, max=max)
-        try:
-            self.ParentForm.TKroot.update()
-        except:
-            _my_windows.Decrement()
-            return False
-        return True
 
     update_bar = UpdateBar
 
@@ -1457,7 +1449,7 @@ class Image(Element):
         :param key:
         :param tooltip:
         '''
-        self.Filename = filename if filename else None # note that Remi expects a / at the front of resource files
+        self.Filename = filename or None
         self.Data = data
         self.tktext_label = None
         self.BackgroundColor = background_color
@@ -1552,7 +1544,6 @@ class SuperImage(remi.gui.Image):
                 #here an image data is received (opencv image)
                 self.imagedata = file_path_name
                 self.refresh()
-            self.refresh()
         else:
             #here a filename is received
             self.attributes['src'] = remi.gui.load_resource(file_path_name)
@@ -1560,12 +1551,13 @@ class SuperImage(remi.gui.Image):
             self.mimetype, self.encoding = mimetypes.guess_type(file_path_name)
             with open(file_path_name, 'rb') as f:
                 self.imagedata = f.read()"""
-            self.refresh()
+
+        self.refresh()
 
     def refresh(self):
-        i = int(time.time() * 1e6)
         # self.app_instance.execute_javascript("""
         if Window.App is not None:
+            i = int(time.time() * 1e6)
             Window.App.execute_javascript("""
                 var url = '/%(id)s/get_image_data?update_index=%(frame_index)s';
                 var xhr = new XMLHttpRequest();
@@ -1580,7 +1572,7 @@ class SuperImage(remi.gui.Image):
                 """ % {'id': id(self), 'frame_index':i})
 
     def get_image_data(self, update_index):
-        headers = {'Content-type': self.mimetype if self.mimetype else 'application/octet-stream'}
+        headers = {'Content-type': self.mimetype or 'application/octet-stream'}
         return [self.imagedata, headers]
 
 
@@ -1880,9 +1872,6 @@ class Graph(Element):
     # def ClickCallback(self, emitter, x, y):
     def ClickCallback(self, widget:remi.gui.Svg, *args):
         return
-        self.ClickPosition = (None, None)
-        self.ParentForm.LastButtonClicked = self.Key if self.Key is not None else ''
-        self.ParentForm.MessageQueue.put(self.ParentForm.LastButtonClicked)
 
     def _DragCallback(self, emitter, x, y):
         if not self.MouseButtonDown:        # only return drag events when mouse is down
@@ -1998,8 +1987,7 @@ class Frame(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
     add_row = AddRow
     layout = Layout
@@ -2099,8 +2087,7 @@ class Tab(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
 
 # ---------------------------------------------------------------------- #
@@ -2171,8 +2158,7 @@ class TabGroup(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
     def FindKeyFromTabName(self, tab_name):
         for row in self.Rows:
@@ -2209,9 +2195,9 @@ class Slider(Element):
         self.TKScale = None
         self.Range = (1, 10) if range == (None, None) else range
         self.DefaultValue = self.Range[0] if default_value is None else default_value
-        self.Orientation = orientation if orientation else DEFAULT_SLIDER_ORIENTATION
-        self.BorderWidth = border_width if border_width else DEFAULT_SLIDER_BORDER_WIDTH
-        self.Relief = relief if relief else DEFAULT_SLIDER_RELIEF
+        self.Orientation = orientation or DEFAULT_SLIDER_ORIENTATION
+        self.BorderWidth = border_width or DEFAULT_SLIDER_BORDER_WIDTH
+        self.Relief = relief or DEFAULT_SLIDER_RELIEF
         self.Resolution = 1 if resolution is None else resolution
         self.ChangeSubmits = change_submits or enable_events
         self.Disabled = disabled
@@ -2301,8 +2287,7 @@ class Column(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
     add_row = AddRow
     layout = Layout
@@ -2418,21 +2403,6 @@ class Table(Element):
     def Update(self, values=None):
         print('*** Table Update not yet supported ***')
         return
-        if values is not None:
-            children = self.TKTreeview.get_children()
-            for i in children:
-                self.TKTreeview.detach(i)
-                self.TKTreeview.delete(i)
-            children = self.TKTreeview.get_children()
-            # self.TKTreeview.delete(*self.TKTreeview.get_children())
-            for i, value in enumerate(values):
-                if self.DisplayRowNumbers:
-                    value = [i + self.StartingRowNumber] + value
-                id = self.TKTreeview.insert('', 'end', text=i, iid=i + 1, values=value, tag=i % 2)
-            if self.AlternatingRowColor is not None:
-                self.TKTreeview.tag_configure(1, background=self.AlternatingRowColor)
-            self.Values = values
-            self.SelectedRows = []
 
 
     def _on_table_row_click(self, table, row, item):

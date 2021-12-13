@@ -42,45 +42,41 @@ def cut_ansi_string_into_parts(string_with_ansi_codes):
             color_used = None
             effect_used = None
             background_used = None
-            for color in range(0, len(color_codes)):
+            for color in range(len(color_codes)):
                 if teststring.startswith(color_codes[color]):
                     working_thread = teststring.split(color_codes[color])
                     ansi_strip = re.compile(r'\x1B[@-_][0-?]*[ -/]*[@-~]')
                     static_string = ansi_strip.sub('', working_thread[1])
                     color_used = color_codes_english[color]
-            for effect in range(0, len(effect_codes)):
+            for effect in range(len(effect_codes)):
                 if teststring.startswith(effect_codes[effect]):
                     working_thread = teststring.split(effect_codes[effect])
                     ansi_strip = re.compile(r'\x1B[@-_][0-?]*[ -/]*[@-~]')
                     static_string = ansi_strip.sub('', working_thread[1])
                     effect_used = effect_codes_english[effect]
-            for background in range(0, len(background_codes)):
+            for background in range(len(background_codes)):
                 if teststring.startswith(background_codes[background]):
                     working_thread = teststring.split(background_codes[background])
                     ansi_strip = re.compile(r'\x1B[@-_][0-?]*[ -/]*[@-~]')
                     static_string = ansi_strip.sub('', working_thread[1])
                     background_used = background_codes_english[background]
             try:
-                if not tuple_list[len(tuple_list) - 1][0]:
-                    if not tuple_list[len(tuple_list) - 1][1] == None:
-                        color_used = tuple_list[len(tuple_list) - 1][1]
-                    if not tuple_list[len(tuple_list) - 1][2] == None:
-                        background_used = tuple_list[len(tuple_list) - 1][2]
-                    if not tuple_list[len(tuple_list) - 1][3] == None:
-                        effect_used = tuple_list[len(tuple_list) - 1][3]
-                    tuple_list += [(static_string, color_used, background_used, effect_used)]
-                else:
-                    tuple_list += [(static_string, color_used, background_used, effect_used)]
+                if not tuple_list[-1][0]:
+                    if not tuple_list[-1][1] is None:
+                        color_used = tuple_list[-1][1]
+                    if not tuple_list[-1][2] is None:
+                        background_used = tuple_list[-1][2]
+                    if not tuple_list[-1][3] is None:
+                        effect_used = tuple_list[-1][3]
+                tuple_list += [(static_string, color_used, background_used, effect_used)]
             except Exception:
                 tuple_list += [(static_string, color_used, background_used, effect_used)]
 
-    new_tuple_list = []
-
-    for x in range(0, len(tuple_list)):
-        if tuple_list[x][0]:
-            new_tuple_list += [(tuple_list[x][0], tuple_list[x][1], tuple_list[x][2], tuple_list[x][3])]
-
-    return new_tuple_list
+    return [
+        (tuple_[0], tuple_[1], tuple_[2], tuple_[3])
+        for tuple_ in tuple_list
+        if tuple_[0]
+    ]
 
 
 def main():
@@ -119,8 +115,7 @@ def runCommand(cmd, timeout=None, window=None):
                                      autoscroll=True)
         window.refresh()
 
-    retval = p.wait(timeout)
-    return retval
+    return p.wait(timeout)
 
 
 sg.theme('Dark Blue 3')

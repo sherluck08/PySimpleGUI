@@ -31,7 +31,7 @@ window['-OUT3-'].expand(True, True, True)
 window['-OUT2-'].expand(True, True, True)
 while True:
     event, values = window.read(timeout=100)
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     loc = window.current_location()
     window['-OUT-'].update(loc)

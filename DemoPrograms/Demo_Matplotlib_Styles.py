@@ -199,9 +199,7 @@ def create_window():
               [sg.Col(left_col), sg.Image(key='-IMAGE-')],
               [sg.B('Draw'), sg.B('Exit')]]
 
-    window = sg.Window('Matplotlib Embedded Template', layout, finalize=True)
-
-    return window
+    return sg.Window('Matplotlib Embedded Template', layout, finalize=True)
 
 
 def main():
@@ -210,7 +208,7 @@ def main():
     while True:
         event, values = window.read()
         print(event, values)
-        if event == 'Exit' or event == sg.WIN_CLOSED:
+        if event in ['Exit', sg.WIN_CLOSED]:
             break
         if event == 'Draw':
             if values['-THEME-'] != sg.theme():  # if new theme chosen, create a new window

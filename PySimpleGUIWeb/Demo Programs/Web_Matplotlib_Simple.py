@@ -47,7 +47,7 @@ def main():
 
     while True:
         event, values = window.read()
-        if event == 'Exit' or event == sg.WIN_CLOSED:
+        if event in ['Exit', sg.WIN_CLOSED]:
             break
         if event == 'Draw':
             draw_figure(window['-IMAGE-'], create_figure())

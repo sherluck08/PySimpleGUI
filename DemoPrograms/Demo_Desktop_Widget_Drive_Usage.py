@@ -23,7 +23,7 @@ def human_size(bytes, units=(' bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB')):
 
 def update_window(window):
     particians = psutil.disk_partitions()
-    for count, part in enumerate(particians):
+    for part in particians:
         mount = part[0]
         try:
             usage = psutil.disk_usage(mount)

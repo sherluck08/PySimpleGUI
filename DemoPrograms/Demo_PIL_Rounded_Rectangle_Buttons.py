@@ -50,7 +50,7 @@ def rounded_rectangle(text,  font=('arial.ttf', 14), button_color=None,):
     paragraph = text.split('\n')
     w = max(map(lambda x: ttf_font.getsize(x)[0], paragraph)) + 2 * pad
     h = sum(map(lambda x: ttf_font.getsize(x)[1], paragraph)) + 2 * pad + len(paragraph) * spacing
-    c0, c1 = button_color if button_color else sg.theme_button_color()
+    c0, c1 = button_color or sg.theme_button_color()
     c0 = c0 if c0 != sg.COLOR_SYSTEM_DEFAULT else 'white'
     c1 = c1 if c1 != sg.COLOR_SYSTEM_DEFAULT else 'white'
     im = Image.new("RGBA", (w, h), (255, 255, 255, 0))

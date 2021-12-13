@@ -223,8 +223,7 @@ while True:
 
     # update page number field
     if event in my_keys:
-        goto.update(str(cur_page + 1))
-
+        goto.update(str(old_page + 1))
 window.close()
 
 # print some response time statistics

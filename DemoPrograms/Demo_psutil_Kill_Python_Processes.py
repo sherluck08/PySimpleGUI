@@ -78,22 +78,26 @@ def get_all_procs():
 def show_list_by_name():
     disp_data = get_all_procs()
     disp_data = sorted(disp_data, key=operator.itemgetter(3), reverse=False)
-    display_list = []
-    for process in disp_data:
-        if 'python' in process[2].lower():
-            display_list.append('{:5d} {:5.2f} {} {}\n'.format(process[0], process[1], process[2], process[3]))
-    return display_list
+    return [
+        '{:5d} {:5.2f} {} {}\n'.format(
+            process[0], process[1], process[2], process[3]
+        )
+        for process in disp_data
+        if 'python' in process[2].lower()
+    ]
 
 
 def show_list_by_cpu():
     disp_data = get_all_procs()
     disp_data = sorted(disp_data, key=operator.itemgetter(1), reverse=True)
 
-    display_list = []
-    for process in disp_data:
-        if 'python' in process[2].lower():
-            display_list.append('{:5d} {:5.2f} {} {}\n'.format(process[0], process[1], process[2], process[3]))
-    return display_list
+    return [
+        '{:5d} {:5.2f} {} {}\n'.format(
+            process[0], process[1], process[2], process[3]
+        )
+        for process in disp_data
+        if 'python' in process[2].lower()
+    ]
 
 
 def make_window():
@@ -109,19 +113,17 @@ def make_window():
                sg.Button('Kill All & Exit', button_color='red on white'),
                sg.Exit(button_color=('white', 'sea green'))]]
 
-    window = sg.Window('Python Process Killer', layout,
+    return sg.Window('Python Process Killer', layout,
                        keep_on_top=True,
                        auto_size_buttons=False,
                        default_button_element_size=(12, 1),
                        return_keyboard_events=True,
                        finalize=True)
 
-    return window
-
 def kill_all():
     processes_to_kill = show_list_by_name()
     for proc in processes_to_kill:
-        pid = int(proc[0:5])
+        pid = int(proc[:5])
         try:
             kill_proc(pid=pid)
             # kill_proc_tree(pid=pid)
@@ -160,7 +162,7 @@ def main(silent=False):
             else:
                 processes_to_kill = values['-processes-']
             for proc in processes_to_kill:
-                pid = int(proc[0:5])
+                pid = int(proc[:5])
                 try:
                     kill_proc(pid=pid)
                     # kill_proc_tree(pid=pid)
@@ -173,13 +175,14 @@ def main(silent=False):
         elif event == 'Sort by % CPU':
             window['-processes-'].update(show_list_by_cpu())
             name_sorted = False
-        else:  # was a typed character
-            if display_list is not None:
-                new_output = []
-                for line in display_list:
-                    if values['-filter-'] in line.lower():
-                        new_output.append(line)
-                window['-processes-'].update(new_output)
+        elif display_list is not None:
+            new_output = [
+                line
+                for line in display_list
+                if values['-filter-'] in line.lower()
+            ]
+
+            window['-processes-'].update(new_output)
     window.close()
 
 

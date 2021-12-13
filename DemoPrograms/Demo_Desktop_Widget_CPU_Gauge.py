@@ -293,7 +293,7 @@ def main(location):
         # ----------- update the graphics and text in the window ------------
         # update the window, wait for a while, then check for exit
         event, values = window.read(timeout=UPDATE_FREQUENCY_MILLISECONDS)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Edit Me':
             sg.execute_editor(__file__)

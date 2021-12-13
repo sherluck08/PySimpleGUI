@@ -97,7 +97,7 @@ def main(location):
     saved_date = sg.user_settings_get_entry('-start date-', (1,1,2021))
     start_date = datetime.datetime(saved_date[2], saved_date[0], saved_date[1])
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         # First update the status information
         delta = datetime.datetime.now() - start_date
         window['-MAIN INFO-'].update(f'{delta.days}')
@@ -108,7 +108,7 @@ def main(location):
         # -------------- Start of normal event loop --------------
         event, values = window.read(timeout=UPDATE_FREQUENCY_MILLISECONDS)
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Edit Me':
             sg.execute_editor(__file__)

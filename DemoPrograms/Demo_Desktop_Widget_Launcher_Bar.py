@@ -53,8 +53,8 @@ def make_window():
     old_bg = sg.theme_background_color()
     sg.theme_background_color(screen_background_color)
     button_row = []
+    tip = 'Grab anywhere to move the launcher\nClick an item to launch something\nRight Click to get to settings'
     for item in launcher_buttons.keys():
-        tip = 'Grab anywhere to move the launcher\nClick an item to launch something\nRight Click to get to settings'
         if isinstance(item, bytes):
             button = sg.Button(image_data=item, key=item, metadata=launcher_buttons[item], button_color=screen_background_color,tooltip=tip, border_width=0)
         else:
@@ -89,10 +89,11 @@ def main():
         event, values = window.read(timeout=1000)        # Not needed but handy while debugging
         # print(event, values)
         if event in (sg.WIN_CLOSE_ATTEMPTED_EVENT, 'Exit', sg.WIN_CLOSED):
-            if event != sg.WIN_CLOSED:
-                if sg.user_settings_get_entry('-auto save location-', True):
-                    print('saving locatoin', window.current_location())
-                    sg.user_settings_set_entry('-window location-', window.current_location())
+            if event != sg.WIN_CLOSED and sg.user_settings_get_entry(
+                '-auto save location-', True
+            ):
+                print('saving locatoin', window.current_location())
+                sg.user_settings_set_entry('-window location-', window.current_location())
             break
         if event in launcher_buttons:
             action = window[event].metadata

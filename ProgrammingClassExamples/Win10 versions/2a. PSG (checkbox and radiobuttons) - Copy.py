@@ -5,7 +5,7 @@
 import PySimpleGUI as sg
 
 #Set colour scheme and font
-sg.ChangeLookAndFeel('GreenTan')                
+sg.ChangeLookAndFeel('GreenTan')
 sg.SetOptions (font =('Calibri',12,'bold')) 
 
 
@@ -24,21 +24,18 @@ window = sg.Window('Gym Membership').Layout(layout)
 
 while True:
     button, value = window.Read()
-    if button is not None:
-        if value[1]:
-            cost = 50
-        elif value[2]:
-            cost = 100
-        else:
-            cost = 300
-        if value[0]:
-            #apply discount
-            cost = cost*0.9         
-
-        #format as currency $ symbol and 2 d.p. - make a string
-        result = str(' Cost: ' + '${:.2f}'.format(cost))
-         #put the result in Textbox
-        window.FindElement('result').Update(result)           
-
-    else:
+    if button is None:
         break
+    if value[1]:
+        cost = 50
+    elif value[2]:
+        cost = 100
+    else:
+        cost = 300
+    if value[0]:
+        #apply discount
+        cost = cost*0.9         
+
+    #format as currency $ symbol and 2 d.p. - make a string
+    result = str(' Cost: ' + '${:.2f}'.format(cost))
+    window.FindElement('result').Update(result)

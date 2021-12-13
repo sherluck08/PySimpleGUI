@@ -96,7 +96,7 @@ def main():
     counter = 0
     while True:  # Event Loop
         window, event, values = sg.read_all_windows(timeout=100)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
 
         # ------ events to handle minimize and restore of window ------

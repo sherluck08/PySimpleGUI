@@ -7,6 +7,7 @@ These are the accepted design patterns that cover the two primary use cases
 3. A persistent window that stays open after button clicks (uses an event loop)
 4. A persistent window that need to perform update of an element before the window.read
 """
+
 # -----------------------------------#
 # DESIGN PATTERN 1 - One-shot Window #
 # -----------------------------------#
@@ -43,7 +44,7 @@ window = sg.Window('Design Pattern 3 - Persistent Window', layout)
 
 while True:     # Event Loop
     event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Cancel':
+    if event in [sg.WIN_CLOSED, 'Cancel']:
         break
 window.close()
 
@@ -64,7 +65,7 @@ window['-TEXT-KEY-'].update('Modified before event loop')
 
 while True:     # Event Loop
     event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Cancel':
+    if event in [sg.WIN_CLOSED, 'Cancel']:
         break
     if event == 'OK':
         window['-TEXT-KEY-'].update(values['-INPUT-'])

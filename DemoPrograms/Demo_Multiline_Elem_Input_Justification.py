@@ -29,9 +29,9 @@ def main():
 
     window = sg.Window('Window Title', layout, keep_on_top=True, resizable=True, finalize=True)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         # Get desired justication from radio buttons. You don't need this if you know your justification already
         justification = 'l' if values['-L-'] else 'r' if values['-R-'] else 'c'

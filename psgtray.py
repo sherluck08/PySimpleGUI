@@ -74,11 +74,7 @@ class SystemTray:
         SystemTray.key_counter += 1
         self.double_click_timer = 0
         self.single_click_events_enabled = single_click_events
-        if icon is None:
-            self.icon = sg.DEFAULT_BASE64_ICON
-        else:
-            self.icon = icon
-
+        self.icon = sg.DEFAULT_BASE64_ICON if icon is None else icon
         self.thread_started = False
         self.thread = threading.Thread(target=self._pystray_thread, daemon=True)
         self.thread.start()
@@ -136,8 +132,8 @@ class SystemTray:
 
     def _convert_psg_menu_to_tray(self, psg_menu):
         menu_items = []
-        i = 0
         if isinstance(psg_menu, list):
+            i = 0
             while i < len(psg_menu):
                 item = psg_menu[i]
                 look_ahead = item
@@ -185,12 +181,11 @@ class SystemTray:
     def _create_image(self, icon):
         if isinstance(icon, bytes):
             buffer = io.BytesIO(base64.b64decode(icon))
-            img = Image.open(buffer)
+            return Image.open(buffer)
         elif isinstance(icon, str):
-            img = Image.open(icon)
+            return Image.open(icon)
         else:
-            img = None
-        return img
+            return None
 
 
 # MM""""""""`M                                       dP
@@ -237,7 +232,7 @@ def main():
         # if it's a tray event, change the event variable to be whatever the tray sent
         # This will make your event loop homogeneous with event conditionals all using the same event variable
         if event in (tray1.key, tray2.key):
-            sg.cprint(f'System Tray Event = ', values[event], c='white on red')
+            sg.cprint('System Tray Event = ', values[event], c='white on red')
             tray = tray1 if event == tray1.key else tray2
             event = values[event]       # use the System Tray's event as if was from the window
         else:

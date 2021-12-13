@@ -24,7 +24,7 @@ window = sg.Window('Window Title', layout, return_keyboard_events=True)
 while True:             # Event Loop
     event, values = window.read()
     print(event)
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     elem = window.find_element_with_focus()
 

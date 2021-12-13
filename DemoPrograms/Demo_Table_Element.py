@@ -16,7 +16,7 @@ def number(max_val=1000):
     return random.randint(0, max_val)
 
 def make_table(num_rows, num_cols):
-    data = [[j for j in range(num_cols)] for i in range(num_rows)]
+    data = [list(range(num_cols)) for i in range(num_rows)]
     data[0] = [word() for __ in range(num_cols)]
     for i in range(1, num_rows):
         data[i] = [word(), *[number() for i in range(num_cols - 1)]]

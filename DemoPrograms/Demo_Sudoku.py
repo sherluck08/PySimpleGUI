@@ -25,8 +25,8 @@ def generate_sudoku(mask_rate):
     :type mask_rate: float
     :rtype: List[numpy.ndarry, numpy.ndarry]
     """
+    n = 9
     while True:
-        n = 9
         solution = np.zeros((n, n), np.int)
         rg = np.arange(1, n + 1)
         solution[0, :] = np.random.choice(rg, n, replace=False)
@@ -93,7 +93,11 @@ def create_and_show_puzzle(window):
     puzzle, solution = generate_sudoku(mask_rate=rate)
     for r, row in enumerate(puzzle):
         for c, col in enumerate(row):
-            window[r, c].update(puzzle[r][c] if puzzle[r][c] else '', background_color=sg.theme_input_background_color())
+            window[r, c].update(
+                puzzle[r][c] or '',
+                background_color=sg.theme_input_background_color(),
+            )
+
     return puzzle, solution
 
 

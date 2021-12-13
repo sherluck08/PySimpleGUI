@@ -64,8 +64,8 @@ def popup_get_date(start_mon=None, start_day=None, start_year=None, begin_at_sun
         month_days = list(itertools.chain.from_iterable([[0 for _ in range(8 - begin_at_sunday_plus)]] + weeks))
         if month_days[6] == 0:
             month_days = month_days[7:]
-            if month_days[6] == 0:
-                month_days = month_days[7:]
+        if month_days[6] == 0:
+            month_days = month_days[7:]
         for i, day in enumerate(month_days):
             offset = i
             if offset >= 6 * 7:
@@ -75,9 +75,19 @@ def popup_get_date(start_mon=None, start_day=None, start_year=None, begin_at_sun
     def make_days_layout():
         days_layout = []
         for week in range(6):
-            row = []
-            for day in range(7):
-                row.append(sg.T('', size=(4, 1), justification='c', font=day_font, key=(week, day), enable_events=True, pad=(0, 0)))
+            row = [
+                sg.T(
+                    '',
+                    size=(4, 1),
+                    justification='c',
+                    font=day_font,
+                    key=(week, day),
+                    enable_events=True,
+                    pad=(0, 0),
+                )
+                for day in range(7)
+            ]
+
             days_layout.append(row)
         return days_layout
 

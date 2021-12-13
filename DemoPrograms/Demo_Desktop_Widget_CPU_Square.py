@@ -29,7 +29,14 @@ def main(location):
 
     window = sg.Window('CPU Usage Widget Square', layout, location=location, no_titlebar=True, grab_anywhere=True, margins=(0, 0), element_padding=(0, 0), alpha_channel=ALPHA, finalize=True, right_click_menu=sg.MENU_RIGHT_CLICK_EDITME_EXIT)
 
-    text_id2 = graph.draw_text(f'CPU', (GSIZE[0] // 2, GSIZE[1] // 4), font='Any 20', text_location=sg.TEXT_LOCATION_CENTER,                               color=sg.theme_button_color()[0])
+    text_id2 = graph.draw_text(
+        'CPU',
+        (GSIZE[0] // 2, GSIZE[1] // 4),
+        font='Any 20',
+        text_location=sg.TEXT_LOCATION_CENTER,
+        color=sg.theme_button_color()[0],
+    )
+
 
 
     while True:  # Event Loop
@@ -45,7 +52,7 @@ def main(location):
 
         # update the window, wait for a while, then check for exit
         event, values = window.read(timeout=UPDATE_FREQUENCY_MILLISECONDS)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Edit Me':
             sg.execute_editor(__file__)

@@ -43,9 +43,9 @@ def main():
 
     sg.cprint_set_output_destination(window, output_key)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Print':
             sg.cprint(values['-IN-'], text_color=values['-TEXT COLOR-'], background_color=values['-BG COLOR-'])

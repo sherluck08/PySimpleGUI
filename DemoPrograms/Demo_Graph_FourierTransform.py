@@ -61,7 +61,7 @@ while True:
     start_time = time.time()
 
     event, values = window.read(timeout=timeout)
-    if event == None:
+    if event is None:
         break
 
     update(i)

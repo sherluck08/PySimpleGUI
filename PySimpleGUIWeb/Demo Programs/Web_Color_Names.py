@@ -689,7 +689,7 @@ layout = [[sg.Text('Hover mouse to see RGB value. Click to see Button with White
                 size=(90, 2), pad=(0, 0))]]
 
 # -- Create primary color viewer window by building rows and appending to layout --
-color_list = [key for key in color_map]
+color_list = list(color_map)
 for rows in range(40):
     row = []
     for i in range(12):

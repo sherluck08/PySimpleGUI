@@ -68,10 +68,10 @@ def main():
 
     window = sg.Window('Window Title', layout, finalize=True, keep_on_top=True)
     count = 0
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read(timeout=500)
         sg.cprint(event, values) if event != sg.TIMEOUT_EVENT else None
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         process_popup()
         if event.startswith('Start'):

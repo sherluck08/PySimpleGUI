@@ -120,12 +120,11 @@ def draw_figure(figure):
     canv = FigureCanvasAgg(figure)
     buf = io.BytesIO()
     canv.print_figure(buf, format='png')
-    if buf is not None:
-        buf.seek(0)
-        # element.update(data=buf.read())
-        return buf
-    else:
+    if buf is None:
         return None
+    buf.seek(0)
+    # element.update(data=buf.read())
+    return buf
 
 
 #  .88888.  dP     dP dP

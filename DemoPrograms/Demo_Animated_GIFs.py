@@ -29,7 +29,7 @@ bar_striped = b'R0lGODlhoAAUAIAAAAQCBP7+/iH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCQABACwA
 gifs = [ring_blue, red_dots_ring, ring_black_dots, ring_gray_segments, ring_lines, blue_dots, red_dots_ring, bar_striped, line_boxes, line_bubbles]
 
 # first show how to use popup_animated using built-in GIF image
-for i in range(100000):
+for _ in range(100000):
     sg.popup_animated(sg.DEFAULT_BASE64_LOADING_GIF, message='Right Click To Exit GIF Windows That Follow\nLeft click to move to next one', no_titlebar=False, time_between_frames=100, text_color='black', background_color='white')
 sg.popup_animated(None)      # close all Animated Popups
 

@@ -13,9 +13,17 @@ def Battleship():
     # Build the "board", a grid of Buttons
     board = []
     for row in range(MAX_ROWS):
-        layout_row = []
-        for col in range(MAX_COL):
-            layout_row.append(sg.Button(str('O'), size=(4, 2), pad=(0,0), border_width=0, key=(row,col)))
+        layout_row = [
+            sg.Button(
+                str('O'),
+                size=(4, 2),
+                pad=(0, 0),
+                border_width=0,
+                key=(row, col),
+            )
+            for col in range(MAX_COL)
+        ]
+
         board.append(layout_row)
 
     # Add the board to the layout

@@ -56,15 +56,13 @@ def HowDoI():
             # manually clear input because keyboard events blocks clear
             window['query'].update('')
             window['history'].update('\n'.join(command_history[-3:]))
-        elif event == None or event == 'EXIT':            # if exit button or closed using X
+        elif event is None or event == 'EXIT':            # if exit button or closed using X
             break
-        # scroll back in history
         elif 'Up' in event and len(command_history):
             command = command_history[history_offset]
             # decrement is not zero
             history_offset -= 1 * (history_offset > 0)
             window['query'].update(command)
-        # scroll forward in history
         elif 'Down' in event and len(command_history):
             # increment up to end of list
             history_offset += 1 * (history_offset < len(command_history)-1)
