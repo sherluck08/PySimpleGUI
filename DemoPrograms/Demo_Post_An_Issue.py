@@ -148,7 +148,7 @@ def validate(values, checklist, issue_types):
         sg.popup_error('Must fill in an OS Version')
         return False
 
-    checkboxes = any([ values[('-CB-', i)] for i in range(len(checklist))])
+    checkboxes = any(values[('-CB-', i)] for i in range(len(checklist)))
     if not checkboxes:
         sg.popup_error('None of the checkboxes were checked.... you need to have tried something...anything...')
         return False
@@ -317,25 +317,29 @@ def main_open_github_issue():
     # window['-FRAME CODE-'].expand(True, True, True)
     # window['-FRAME DETAILS-'].expand(True, True, True)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         # print(event, values)
-        if event in (sg.WINDOW_CLOSE_ATTEMPTED_EVENT, 'Quit'):
-            if sg.popup_yes_no( 'Do you really want to exit?',
-                                'If you have not clicked Post Issue button and then clicked "Submit New Issue" button '
-                                'then your issue will not have been submitted to GitHub.'
-                                'Do no exit until you have PASTED the information from Markdown tab into an issue?') == 'Yes':
-                break
+        if (
+            event in (sg.WINDOW_CLOSE_ATTEMPTED_EVENT, 'Quit')
+            and sg.popup_yes_no(
+                'Do you really want to exit?',
+                'If you have not clicked Post Issue button and then clicked "Submit New Issue" button '
+                'then your issue will not have been submitted to GitHub.'
+                'Do no exit until you have PASTED the information from Markdown tab into an issue?',
+            )
+            == 'Yes'
+        ):
+            break
         if event == sg.WIN_CLOSED:
             break
         if event in ['-T{}-'.format(i) for i in range(len(checklist))]:
             webbrowser.open_new_tab(window[event].get())
         if event in issue_types:
             title = str(values['-TITLE-'])
-            if len(title) != 0:
-                if title[0] == '[' and title.find(']'):
-                    title = title[title.find(']')+1:]
-                    title = title.strip()
+            if title != '' and title[0] == '[' and title.find(']'):
+                title = title[title.find(']')+1:]
+                title = title.strip()
             window['-TITLE-'].update('[{}] {}'.format(event, title))
         if event == 'Help':
             _github_issue_help()

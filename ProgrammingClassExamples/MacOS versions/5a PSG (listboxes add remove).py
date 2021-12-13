@@ -24,8 +24,12 @@ List = ['Austalia', 'Canada', 'Greece']
 
 #add initial List  to listbox
 layout = [
-    [sg.Listbox(values=[l for l in List], size = (20,8), key ='_listbox_'),
-     sg.Column(column1)]]
+    [
+        sg.Listbox(values=list(List), size=(20, 8), key='_listbox_'),
+        sg.Column(column1),
+    ]
+]
+
 
 window = sg.Window('Listbox').Layout(layout)
 

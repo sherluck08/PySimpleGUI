@@ -24,14 +24,37 @@ def MachineLearningGUI():
                        sg.Rad('MAE(L1)', 'loss', size=(12, 1))],
                       [sg.Rad('MSE(L2)', 'loss', size=(12, 1)), sg.Rad('MB(L0)', 'loss', size=(12, 1))], ]
 
-    command_line_parms = [[sg.Text('Passes', size=(8, 1)), sg.Spin(values=[i for i in range(1, 1000)], initial_value=20, size=(6, 1)),
-                           sg.Text('Steps', size=(8, 1), pad=((7, 3))), sg.Spin(values=[i for i in range(1, 1000)], initial_value=20, size=(6, 1))],
-                          [sg.Text('ooa', size=(8, 1)), sg.Input(default_text='6', size=(8, 1)), sg.Text('nn', size=(8, 1)),
-                           sg.Input(default_text='10', size=(10, 1))],
-                          [sg.Text('q', size=(8, 1)), sg.Input(default_text='ff', size=(8, 1)), sg.Text('ngram', size=(8, 1)),
-                           sg.Input(default_text='5', size=(10, 1))],
-                          [sg.Text('l', size=(8, 1)), sg.Input(default_text='0.4', size=(8, 1)), sg.Text('Layers', size=(8, 1)),
-                           sg.Drop(values=('BatchNorm', 'other'))], ]
+    command_line_parms = [
+        [
+            sg.Text('Passes', size=(8, 1)),
+            sg.Spin(
+                values=list(range(1, 1000)), initial_value=20, size=(6, 1)
+            ),
+            sg.Text('Steps', size=(8, 1), pad=((7, 3))),
+            sg.Spin(
+                values=list(range(1, 1000)), initial_value=20, size=(6, 1)
+            ),
+        ],
+        [
+            sg.Text('ooa', size=(8, 1)),
+            sg.Input(default_text='6', size=(8, 1)),
+            sg.Text('nn', size=(8, 1)),
+            sg.Input(default_text='10', size=(10, 1)),
+        ],
+        [
+            sg.Text('q', size=(8, 1)),
+            sg.Input(default_text='ff', size=(8, 1)),
+            sg.Text('ngram', size=(8, 1)),
+            sg.Input(default_text='5', size=(10, 1)),
+        ],
+        [
+            sg.Text('l', size=(8, 1)),
+            sg.Input(default_text='0.4', size=(8, 1)),
+            sg.Text('Layers', size=(8, 1)),
+            sg.Drop(values=('BatchNorm', 'other')),
+        ],
+    ]
+
 
     layout = [[sg.Frame('Command Line Parameteres', command_line_parms, title_color='green', font='Any 12')],
               [sg.Frame('Flags', flags, font='Any 12', title_color='blue')],
@@ -62,7 +85,7 @@ def CustomMeter():
     for i in range(1000):
         # check to see if the cancel button was clicked and exit loop if clicked
         event, values = window.read(timeout=0, timeout_key='timeout')
-        if event == 'Cancel' or event == None:
+        if event == 'Cancel' or event is None:
             break
         # update bar with loop value +1 so that bar eventually reaches the maximum
         progress_bar.update_bar(i+1)

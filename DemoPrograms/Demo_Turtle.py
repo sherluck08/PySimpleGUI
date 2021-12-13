@@ -44,7 +44,7 @@ while True:     # Event Loop
         a_turtle.color("blue")
 
         def sqrfunc(size):
-            for i in range(4):
+            for _ in range(4):
                 a_turtle.fd(size)
                 a_turtle.left(90)
                 size = size - 5
@@ -60,7 +60,7 @@ while True:     # Event Loop
         a_turtle.color("blue")
 
         def sqrfunc(size):
-            for i in range(4):
+            for _ in range(4):
                 a_turtle.fd(size)
                 a_turtle.left(90)
                 size = size + 5

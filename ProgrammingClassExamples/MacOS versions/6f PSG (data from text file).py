@@ -41,7 +41,7 @@ def display_list(list):
     #store list in Multiline text globally
     list_displayed = list
     #add list elements with new line
-    values = [l for l in list]          
+    values = list(list)
     window.FindElement('_display_').Update(values)
         
 #use inbuilt python sort       
@@ -126,23 +126,21 @@ def binary_search():
      
 while True:
     button, value = window.Read()
-    if button is not None:  
-        if button == 'Original list':
-            display_list(names)
-        if button == 'Default sort':
-            default(names)
-        if button == 'Sort: selection':
-            sel_sort(names)
-        if button == 'Sort: quick':
-            qsort_holder(names)
-        if button == 'Linear Search':
-            linear_search()
-        if button == 'Binary Search':
-            binary_search()
-        if button == 'Save data\ndisplayed':
-            f = open(spathname, 'w')                                      
+    if button is None:
+        break
+    if button == 'Original list':
+        display_list(names)
+    if button == 'Default sort':
+        default(names)
+    if button == 'Sort: selection':
+        sel_sort(names)
+    if button == 'Sort: quick':
+        qsort_holder(names)
+    if button == 'Linear Search':
+        linear_search()
+    if button == 'Binary Search':
+        binary_search()
+    if button == 'Save data\ndisplayed':
+        with open(spathname, 'w') as f:
             for name in list_displayed:
-                print (name, file = f)
-            f.close()
-    else:
-        break  
+                print (name, file = f)  

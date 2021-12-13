@@ -59,6 +59,6 @@ window = sg.Window('Dashboard PySimpleGUI-Style', layout, margins=(0,0), backgro
 
 while True:             # Event Loop
     event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
 window.close()

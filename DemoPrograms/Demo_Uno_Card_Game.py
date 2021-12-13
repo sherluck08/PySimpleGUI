@@ -179,7 +179,7 @@ class Player():
                 elif card.getValue() == 'X':
                     self.canSkip = True
                 self.legalCards.append(card)
-        if len(self.legalCards) == 0 and len(plusFours) > 0:
+        if not self.legalCards and plusFours:
             self.canDrawFour = True
             self.wildCards += plusFours
 
@@ -327,12 +327,10 @@ class GameSettings():
 
     def finalizePlayers(self):
         self.players.clear()
-        identity = 0
-        for player in self.playerStaging:
+        for identity, player in enumerate(self.playerStaging):
             playerID = GameSettings.playerIdentities[identity]
             player.assignID(playerID)
             self.players[playerID] = player
-            identity += 1
 
     def getPlayerNum(self):
         return self.numPlayers
@@ -383,7 +381,7 @@ class Deck():
                 self.deck.append(Card(color, value))
                 if value != '0':
                     self.deck.append(Card(color, value))
-        for i in range(4):
+        for _ in range(4):
             self.deck.append(Card('wild', '+4'))
             self.deck.append(Card('wild', 'W'))
         if shuffle:
@@ -425,12 +423,12 @@ class ComputerPlayer(Player):
 
     def indexCard(self, cardColor, cardValue):
         for card in self.hand:
-            if card.getValue() == cardValue:
-                if cardValue in ('+4', 'W'):
-                    return self.hand.indexCard(card)
-                else:
-                    if card.getColor() == cardColor:
-                        return self.hand.indexCard(card)
+            if card.getValue() == cardValue and (
+                cardValue not in ('+4', 'W')
+                and card.getColor() == cardColor
+                or cardValue in ('+4', 'W')
+            ):
+                return self.hand.indexCard(card)
         raise ValueError("Card Cannot Be Found")
 
     def think(self, match):
@@ -451,57 +449,51 @@ class ComputerPlayer(Player):
 
         self.getLegalCards(self.currentColor, currentValue, zeroChangeRule)
 
-        ### DRAW CASE ###
-
         if len(self.legalCards) == 0 and len(self.wildCards) == 0:
             return "d"
 
-        else:
-
             ### NO LEGAL CARD, USE WILD CARD ###
 
-            if len(self.legalCards) == 0:
+        if len(self.legalCards) == 0:
 
-                if zeroChangeRule and self.canZeroChange:
-                    bestZeroColor = self.getBestColor(self.zeroCards)
-                    card = self.getCardByColor(self.zeroCards, bestZeroColor)
+            if zeroChangeRule and self.canZeroChange:
+                bestZeroColor = self.getBestColor(self.zeroCards)
+                card = self.getCardByColor(self.zeroCards, bestZeroColor)
 
-                else:
-
-                    if self.canDrawFour:
-                        card = self.getCardByValue(self.wildCards, "+4")
-                        # print(card)
-
-                    else:
-                        card = random.choice(self.wildCards)
+            elif self.canDrawFour:
+                card = self.getCardByValue(self.wildCards, "+4")
+                # print(card)
 
             else:
+                card = random.choice(self.wildCards)
 
-                ### HAS LEGAL CARD ###
+        else:
 
-                if twoPlayers and self.canSkip:  # Always play a skip card in a two player game
-                    # print("Shed Skip Strategy")
-                    card = self.getCardByValue(self.legalCards, "R", "X")
+            ### HAS LEGAL CARD ###
 
-                if self.canReverse and previousPlayer.didDraw():
-                    # print("Reverse Strategy")
-                    reverseCards = self.getAllCardsByValue(self.legalCards, "R")
-                    for reverseCard in reverseCards:
-                        if reverseCard.getColor() == self.currentColor:
-                            card = reverseCard
+            if twoPlayers and self.canSkip:  # Always play a skip card in a two player game
+                # print("Shed Skip Strategy")
+                card = self.getCardByValue(self.legalCards, "R", "X")
 
-                if self.canValueChange:
-                    # Computer Can Value Change, However, Should it?
-                    # Computer Checks to See if Value Change Color is Better Than Current
-                    currentColorNum = self.colorsInHand[self.currentColor]
-                    bestValueChangeColor = self.getBestColor(self.valueChangeCards)
-                    if self.colorsInHand[bestValueChangeColor] > currentColorNum or len(self.valueChangeCards) == len(
-                            self.legalCards):
-                        card = self.getCardByColor(self.valueChangeCards, bestValueChangeColor)
+            if self.canReverse and previousPlayer.didDraw():
+                # print("Reverse Strategy")
+                reverseCards = self.getAllCardsByValue(self.legalCards, "R")
+                for reverseCard in reverseCards:
+                    if reverseCard.getColor() == self.currentColor:
+                        card = reverseCard
 
-                if card == None:
-                    # print("Random Strategy")
-                    card = random.choice(list(set(self.legalCards) - set(self.valueChangeCards)))
+            if self.canValueChange:
+                # Computer Can Value Change, However, Should it?
+                # Computer Checks to See if Value Change Color is Better Than Current
+                currentColorNum = self.colorsInHand[self.currentColor]
+                bestValueChangeColor = self.getBestColor(self.valueChangeCards)
+                if self.colorsInHand[bestValueChangeColor] > currentColorNum or len(self.valueChangeCards) == len(
+                        self.legalCards):
+                    card = self.getCardByColor(self.valueChangeCards, bestValueChangeColor)
+
+            if card is None:
+                # print("Random Strategy")
+                card = random.choice(list(set(self.legalCards) - set(self.valueChangeCards)))
 
         color = card.getColor()
         self.colorsInHand[color] -= 1
@@ -520,11 +512,7 @@ class ComputerPlayer(Player):
                 return card
 
     def getAllCardsByValue(self, cardList, *values):
-        cards = []
-        for card in cardList:
-            if card.getValue() in values:
-                cards.append(card)
-        return cards
+        return [card for card in cardList if card.getValue() in values]
 
     def getCardByColor(self, cardList, *colors):
         for card in cardList:
@@ -813,9 +801,11 @@ class Match():
 
         NUM_COLS = 10           # how many cards shown across bottom in 1 row
         NUM_ROWS = 4
-        cards = []
-        for j in range(NUM_ROWS):
-            cards.append([sg.T(' ' * 5,font=('Any 5'))] + [Card(None, j*NUM_COLS+i) for i in range(NUM_COLS)])
+        cards = [
+            [sg.T(' ' * 5, font=('Any 5'))]
+            + [Card(None, j * NUM_COLS + i) for i in range(NUM_COLS)]
+            for j in range(NUM_ROWS)
+        ]
 
         layout = [
             [sg.Column(col_cards_left),
@@ -919,10 +909,7 @@ class Match():
     def buildHandVisual(self, playerID):
         string = '['
         for i in range(self.players[playerID].maxScroll + 1):
-            if i == self.handPosition:
-                string += '|'
-            else:
-                string += '-'
+            string += '|' if i == self.handPosition else '-'
         string += ']'
         self.elements['HVisual'] = string
 
@@ -932,16 +919,13 @@ class Match():
         if playerInput.isnumeric():
             if int(playerInput) + (10 * self.handPosition) < self.players[self.turn].getCardNum():
                 return {'valid': True, 'entry': str(int(playerInput) + (10 * self.handPosition)), 'type': 'card'}
-            else:
-                self.elements['Error'] = '{} is not a card.'.format(playerInput)
-                return {'valid': False, 'entry': playerInput}
+            self.elements['Error'] = '{} is not a card.'.format(playerInput)
         else:
             playerInput = playerInput.lower()[0]
             if playerInput in ['<', '>', 'u', 'd', 'p', 'q', 's']:
                 return {'valid': True, 'entry': playerInput}
-            else:
-                self.elements['Error'] = '{} is not a valid selection.'.format(playerInput)
-                return {'valid': False, 'entry': playerInput}
+            self.elements['Error'] = '{} is not a valid selection.'.format(playerInput)
+        return {'valid': False, 'entry': playerInput}
 
     def checkColorInput(self, playerInput):
         if playerInput == '':
@@ -962,7 +946,7 @@ class Match():
             self.elements['Console'] = 'Dealing Cards...'
         for i in ('play1', 'play2', 'play3', 'play4'):
             if i in self.players:
-                for j in range(7):
+                for _ in range(7):
                     self.dealCard(i)
 
     def eventReverse(self):
@@ -993,7 +977,7 @@ class Match():
             self.elements['Console'] = "Skip Card Placed! Skipping {}'s Turn.".format(self.players[self.turn].getName())
             self.drawScreen(hide)
             time.sleep(1)
-            for i in range(2):
+            for _ in range(2):
                 self.elements['P{}Turn'.format(self.turn[-1])] = '\033[91m'
                 self.drawScreen(hide)
                 time.sleep(.3)
@@ -1038,7 +1022,7 @@ class Match():
         if self.displayEffects and not self.simulation:
             self.elements['Console'] = 'Wild Card! Changing Color.'
             seed = 1
-            for i in range(10):
+            for _ in range(10):
                 if seed > 4:
                     seed = 1
                 self.drawScreen(hide, wildSeed=seed)
@@ -1079,12 +1063,12 @@ class Match():
             self.elements['PostDNum'] = '\t'
         j = 8
         self.elements['Deck'] = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-        for i in range(math.ceil(len(self.deck) / 12)):
+        for _ in range(math.ceil(len(self.deck) / 12)):
             self.elements['Deck'][j] = '='
             j -= 1
 
     def placeCard(self, card=None):
-        if card == None:
+        if card is None:
             ### Used At Beginning For First Card ###
             card = self.deck.draw()
             self.elements['DNum'] = len(self.deck)
@@ -1113,10 +1097,7 @@ class Match():
         if self.currentValue == 'X':
             self.event = 'skip'
         elif self.currentValue == 'R':
-            if len(self.players) > 2:
-                self.event = 'reverse'
-            else:
-                self.event = 'skip'
+            self.event = 'reverse' if len(self.players) > 2 else 'skip'
         elif self.currentValue == '+4':
             self.drawAmount = 4
         elif self.currentValue == '+2':
@@ -1132,17 +1113,20 @@ class Match():
         return card
 
     def enterBreak(self):
-        if not self.simulation:
-            while True:
-                if Match.window is None:
-                    break
-                event, values = Match.window.read()
-                if event == '_DRAW_':
-                    break
-                if event == '_QUIT_':
-                    if sg.PopupYesNo('Do you really want to quit?') == 'Yes':
-                        self.matchAbort = True
-                        self.matchComplete = True
+        if self.simulation:
+            return
+        while True:
+            if Match.window is None:
+                break
+            event, values = Match.window.read()
+            if event == '_DRAW_':
+                break
+            if (
+                event == '_QUIT_'
+                and sg.PopupYesNo('Do you really want to quit?') == 'Yes'
+            ):
+                self.matchAbort = True
+                self.matchComplete = True
 
     def nextTurn(self):
         self.turnComplete = False
@@ -1231,16 +1215,15 @@ class Match():
                         else:
                             self.elements['Error'] = "Card Doesn't Match The Color {} or Value {}!".format(
                                 self.currentColor, self.currentValue)
-                    else:
-                        pass
-
             elif turnType == 'Computer':
                 event, values = Match.window.read(timeout=0)
-                if event == '_QUIT_':
-                    if sg.PopupYesNo('Do you really want to quit?') == 'Yes':
-                        self.matchAbort = True
-                        self.matchComplete = True
-                        break
+                if (
+                    event == '_QUIT_'
+                    and sg.PopupYesNo('Do you really want to quit?') == 'Yes'
+                ):
+                    self.matchAbort = True
+                    self.matchComplete = True
+                    break
 
                 self.elements['Console'] = '{}\'s Turn'.format(self.players[self.turn].getName())
                 self.drawScreen(self.hideComputerHands)
@@ -1276,7 +1259,7 @@ class Match():
                                     self.passes = 0
                                 break
 
-            ### DECODE INPUT ###
+                ### DECODE INPUT ###
         if self.event == 'reverse':
             self.eventReverse()
         elif self.event == 'wild':
@@ -1302,8 +1285,7 @@ class Match():
                 dict = Card.green_dict
             if color == 'yellow':
                 dict = Card.yellow_dict
-            card_graphic = dict[value] if value != '' else Card.wild_card
-            return card_graphic
+            return dict[value] if value != '' else Card.wild_card
 
         Update = lambda key, value, **kwargs: Match.window.Element(key).Update(value, **kwargs)
         elem = lambda key: self.elements[key]
@@ -1371,21 +1353,17 @@ class Match():
         self.turn = self.getNextTurn()
 
     def getNextTurn(self, forceReverse=False):
-        if forceReverse:
-            reverse = not self.reverse
-        else:
-            reverse = self.reverse
+        reverse = not self.reverse if forceReverse else self.reverse
         currentIndex = self.turnList.index(self.turn)
         if not reverse:
             if (currentIndex + 1) == len(self.turnList):
                 return self.turnList[0]
             else:
                 return self.turnList[currentIndex + 1]
+        elif currentIndex == 0:
+            return self.turnList[len(self.turnList) - 1]
         else:
-            if currentIndex == 0:
-                return self.turnList[len(self.turnList) - 1]
-            else:
-                return self.turnList[currentIndex - 1]
+            return self.turnList[currentIndex - 1]
 
     def getPlayer(self, playerID):
         return self.players[playerID]
@@ -1420,10 +1398,10 @@ def mainMenu():
     window = sg.Window('Uno Setup', border_depth=0, layout=layout)
 
     current_player = 0
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         # print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Begin':
             window.Hide()
@@ -1469,22 +1447,10 @@ def mainMenu():
             current_player = event
             state = button_states[event] = button_states[event]+1 if button_states[event] < 2 else 0
             Elem('_TXT_').Update('Enter Player %s (%s) Name'%(str(current_player+1), ('human', 'computer', 'none')[state-1]))
-            if state == 1:
-                Elem('_IN_').SetFocus()
-                Elem('_IN_').Update('Player name', select=True)
-                Elem(event).Update(str(event+1) +' - Player')
-                player_types[event] = PLAYER_TYPE_HUMAN
-            elif state == 2:
-                Elem('_IN_').SetFocus()
-                Elem('_IN_').Update(computer_names[event], select=True)
-                Elem(event).Update(str(event+1) + ' - ' + computer_names[event])
-                player_types[event] = PLAYER_TYPE_COMPUTER
-            elif state == 0:
+            if state == 0:
                 Elem(event).Update(str(event+1) +' - No Player')
                 Elem('_IN_').SetFocus()
                 Elem('_IN_').Update('', select=True)
-                for i in range(event):
-                    pass
                 player_types[event] = None
                 player_names[event] = ''
                 for i in range(event+1,4):
@@ -1494,6 +1460,16 @@ def mainMenu():
                         gs.removePlayer(i)
                     except:
                         pass
+            elif state == 1:
+                Elem('_IN_').SetFocus()
+                Elem('_IN_').Update('Player name', select=True)
+                Elem(event).Update(str(event+1) +' - Player')
+                player_types[event] = PLAYER_TYPE_HUMAN
+            elif state == 2:
+                Elem('_IN_').SetFocus()
+                Elem('_IN_').Update(computer_names[event], select=True)
+                Elem(event).Update(str(event+1) + ' - ' + computer_names[event])
+                player_types[event] = PLAYER_TYPE_COMPUTER
     window.close()
     return player_names
 
@@ -1702,7 +1678,7 @@ class Player():
                 elif card.getValue() == 'X':
                     self.canSkip = True
                 self.legalCards.append(card)
-        if len(self.legalCards) == 0 and len(plusFours) > 0:
+        if not self.legalCards and plusFours:
             self.canDrawFour = True
             self.wildCards += plusFours
 
@@ -1850,12 +1826,10 @@ class GameSettings():
 
     def finalizePlayers(self):
         self.players.clear()
-        identity = 0
-        for player in self.playerStaging:
+        for identity, player in enumerate(self.playerStaging):
             playerID = GameSettings.playerIdentities[identity]
             player.assignID(playerID)
             self.players[playerID] = player
-            identity += 1
 
     def getPlayerNum(self):
         return self.numPlayers
@@ -1906,7 +1880,7 @@ class Deck():
                 self.deck.append(Card(color, value))
                 if value != '0':
                     self.deck.append(Card(color, value))
-        for i in range(4):
+        for _ in range(4):
             self.deck.append(Card('wild', '+4'))
             self.deck.append(Card('wild', 'W'))
         if shuffle:
@@ -1948,12 +1922,12 @@ class ComputerPlayer(Player):
 
     def indexCard(self, cardColor, cardValue):
         for card in self.hand:
-            if card.getValue() == cardValue:
-                if cardValue in ('+4', 'W'):
-                    return self.hand.indexCard(card)
-                else:
-                    if card.getColor() == cardColor:
-                        return self.hand.indexCard(card)
+            if card.getValue() == cardValue and (
+                cardValue not in ('+4', 'W')
+                and card.getColor() == cardColor
+                or cardValue in ('+4', 'W')
+            ):
+                return self.hand.indexCard(card)
         raise ValueError("Card Cannot Be Found")
 
     def think(self, match):
@@ -1974,57 +1948,51 @@ class ComputerPlayer(Player):
 
         self.getLegalCards(self.currentColor, currentValue, zeroChangeRule)
 
-        ### DRAW CASE ###
-
         if len(self.legalCards) == 0 and len(self.wildCards) == 0:
             return "d"
 
-        else:
-
             ### NO LEGAL CARD, USE WILD CARD ###
 
-            if len(self.legalCards) == 0:
+        if len(self.legalCards) == 0:
 
-                if zeroChangeRule and self.canZeroChange:
-                    bestZeroColor = self.getBestColor(self.zeroCards)
-                    card = self.getCardByColor(self.zeroCards, bestZeroColor)
+            if zeroChangeRule and self.canZeroChange:
+                bestZeroColor = self.getBestColor(self.zeroCards)
+                card = self.getCardByColor(self.zeroCards, bestZeroColor)
 
-                else:
-
-                    if self.canDrawFour:
-                        card = self.getCardByValue(self.wildCards, "+4")
-                        # print(card)
-
-                    else:
-                        card = random.choice(self.wildCards)
+            elif self.canDrawFour:
+                card = self.getCardByValue(self.wildCards, "+4")
+                # print(card)
 
             else:
+                card = random.choice(self.wildCards)
 
-                ### HAS LEGAL CARD ###
+        else:
 
-                if twoPlayers and self.canSkip:  # Always play a skip card in a two player game
-                    # print("Shed Skip Strategy")
-                    card = self.getCardByValue(self.legalCards, "R", "X")
+            ### HAS LEGAL CARD ###
 
-                if self.canReverse and previousPlayer.didDraw():
-                    # print("Reverse Strategy")
-                    reverseCards = self.getAllCardsByValue(self.legalCards, "R")
-                    for reverseCard in reverseCards:
-                        if reverseCard.getColor() == self.currentColor:
-                            card = reverseCard
+            if twoPlayers and self.canSkip:  # Always play a skip card in a two player game
+                # print("Shed Skip Strategy")
+                card = self.getCardByValue(self.legalCards, "R", "X")
 
-                if self.canValueChange:
-                    # Computer Can Value Change, However, Should it?
-                    # Computer Checks to See if Value Change Color is Better Than Current
-                    currentColorNum = self.colorsInHand[self.currentColor]
-                    bestValueChangeColor = self.getBestColor(self.valueChangeCards)
-                    if self.colorsInHand[bestValueChangeColor] > currentColorNum or len(self.valueChangeCards) == len(
-                            self.legalCards):
-                        card = self.getCardByColor(self.valueChangeCards, bestValueChangeColor)
+            if self.canReverse and previousPlayer.didDraw():
+                # print("Reverse Strategy")
+                reverseCards = self.getAllCardsByValue(self.legalCards, "R")
+                for reverseCard in reverseCards:
+                    if reverseCard.getColor() == self.currentColor:
+                        card = reverseCard
 
-                if card == None:
-                    # print("Random Strategy")
-                    card = random.choice(list(set(self.legalCards) - set(self.valueChangeCards)))
+            if self.canValueChange:
+                # Computer Can Value Change, However, Should it?
+                # Computer Checks to See if Value Change Color is Better Than Current
+                currentColorNum = self.colorsInHand[self.currentColor]
+                bestValueChangeColor = self.getBestColor(self.valueChangeCards)
+                if self.colorsInHand[bestValueChangeColor] > currentColorNum or len(self.valueChangeCards) == len(
+                        self.legalCards):
+                    card = self.getCardByColor(self.valueChangeCards, bestValueChangeColor)
+
+            if card is None:
+                # print("Random Strategy")
+                card = random.choice(list(set(self.legalCards) - set(self.valueChangeCards)))
 
         color = card.getColor()
         self.colorsInHand[color] -= 1
@@ -2043,11 +2011,7 @@ class ComputerPlayer(Player):
                 return card
 
     def getAllCardsByValue(self, cardList, *values):
-        cards = []
-        for card in cardList:
-            if card.getValue() in values:
-                cards.append(card)
-        return cards
+        return [card for card in cardList if card.getValue() in values]
 
     def getCardByColor(self, cardList, *colors):
         for card in cardList:
@@ -2336,9 +2300,11 @@ class Match():
 
         NUM_COLS = 10           # how many cards shown across bottom in 1 row
         NUM_ROWS = 4
-        cards = []
-        for j in range(NUM_ROWS):
-            cards.append([sg.T(' ' * 5,font=('Any 5'))] + [Card(None, j*NUM_COLS+i) for i in range(NUM_COLS)])
+        cards = [
+            [sg.T(' ' * 5, font=('Any 5'))]
+            + [Card(None, j * NUM_COLS + i) for i in range(NUM_COLS)]
+            for j in range(NUM_ROWS)
+        ]
 
         layout = [
             [sg.Column(col_cards_left),
@@ -2441,10 +2407,7 @@ class Match():
     def buildHandVisual(self, playerID):
         string = '['
         for i in range(self.players[playerID].maxScroll + 1):
-            if i == self.handPosition:
-                string += '|'
-            else:
-                string += '-'
+            string += '|' if i == self.handPosition else '-'
         string += ']'
         self.elements['HVisual'] = string
 
@@ -2454,16 +2417,13 @@ class Match():
         if playerInput.isnumeric():
             if int(playerInput) + (10 * self.handPosition) < self.players[self.turn].getCardNum():
                 return {'valid': True, 'entry': str(int(playerInput) + (10 * self.handPosition)), 'type': 'card'}
-            else:
-                self.elements['Error'] = '{} is not a card.'.format(playerInput)
-                return {'valid': False, 'entry': playerInput}
+            self.elements['Error'] = '{} is not a card.'.format(playerInput)
         else:
             playerInput = playerInput.lower()[0]
             if playerInput in ['<', '>', 'u', 'd', 'p', 'q', 's']:
                 return {'valid': True, 'entry': playerInput}
-            else:
-                self.elements['Error'] = '{} is not a valid selection.'.format(playerInput)
-                return {'valid': False, 'entry': playerInput}
+            self.elements['Error'] = '{} is not a valid selection.'.format(playerInput)
+        return {'valid': False, 'entry': playerInput}
 
     def checkColorInput(self, playerInput):
         if playerInput == '':
@@ -2484,7 +2444,7 @@ class Match():
             self.elements['Console'] = 'Dealing Cards...'
         for i in ('play1', 'play2', 'play3', 'play4'):
             if i in self.players:
-                for j in range(7):
+                for _ in range(7):
                     self.dealCard(i)
 
     def eventReverse(self):
@@ -2515,7 +2475,7 @@ class Match():
             self.elements['Console'] = "Skip Card Placed! Skipping {}'s Turn.".format(self.players[self.turn].getName())
             self.drawScreen(hide)
             time.sleep(1)
-            for i in range(2):
+            for _ in range(2):
                 self.elements['P{}Turn'.format(self.turn[-1])] = '\033[91m'
                 self.drawScreen(hide)
                 time.sleep(.3)
@@ -2560,7 +2520,7 @@ class Match():
         if self.displayEffects and not self.simulation:
             self.elements['Console'] = 'Wild Card! Changing Color.'
             seed = 1
-            for i in range(10):
+            for _ in range(10):
                 if seed > 4:
                     seed = 1
                 self.drawScreen(hide, wildSeed=seed)
@@ -2601,12 +2561,12 @@ class Match():
             self.elements['PostDNum'] = '\t'
         j = 8
         self.elements['Deck'] = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-        for i in range(math.ceil(len(self.deck) / 12)):
+        for _ in range(math.ceil(len(self.deck) / 12)):
             self.elements['Deck'][j] = '='
             j -= 1
 
     def placeCard(self, card=None):
-        if card == None:
+        if card is None:
             ### Used At Beginning For First Card ###
             card = self.deck.draw()
             self.elements['DNum'] = len(self.deck)
@@ -2635,10 +2595,7 @@ class Match():
         if self.currentValue == 'X':
             self.event = 'skip'
         elif self.currentValue == 'R':
-            if len(self.players) > 2:
-                self.event = 'reverse'
-            else:
-                self.event = 'skip'
+            self.event = 'reverse' if len(self.players) > 2 else 'skip'
         elif self.currentValue == '+4':
             self.drawAmount = 4
         elif self.currentValue == '+2':
@@ -2654,17 +2611,20 @@ class Match():
         return card
 
     def enterBreak(self):
-        if not self.simulation:
-            while True:
-                if Match.window is None:
-                    break
-                event, values = Match.window.read()
-                if event == '_DRAW_':
-                    break
-                if event == '_QUIT_':
-                    if sg.PopupYesNo('Do you really want to quit?') == 'Yes':
-                        self.matchAbort = True
-                        self.matchComplete = True
+        if self.simulation:
+            return
+        while True:
+            if Match.window is None:
+                break
+            event, values = Match.window.read()
+            if event == '_DRAW_':
+                break
+            if (
+                event == '_QUIT_'
+                and sg.PopupYesNo('Do you really want to quit?') == 'Yes'
+            ):
+                self.matchAbort = True
+                self.matchComplete = True
 
     def nextTurn(self):
         self.turnComplete = False
@@ -2753,16 +2713,15 @@ class Match():
                         else:
                             self.elements['Error'] = "Card Doesn't Match The Color {} or Value {}!".format(
                                 self.currentColor, self.currentValue)
-                    else:
-                        pass
-
             elif turnType == 'Computer':
                 event, values = Match.window.read(timeout=0)
-                if event == '_QUIT_':
-                    if sg.PopupYesNo('Do you really want to quit?') == 'Yes':
-                        self.matchAbort = True
-                        self.matchComplete = True
-                        break
+                if (
+                    event == '_QUIT_'
+                    and sg.PopupYesNo('Do you really want to quit?') == 'Yes'
+                ):
+                    self.matchAbort = True
+                    self.matchComplete = True
+                    break
 
                 self.elements['Console'] = '{}\'s Turn'.format(self.players[self.turn].getName())
                 self.drawScreen(self.hideComputerHands)
@@ -2798,7 +2757,7 @@ class Match():
                                     self.passes = 0
                                 break
 
-            ### DECODE INPUT ###
+                ### DECODE INPUT ###
         if self.event == 'reverse':
             self.eventReverse()
         elif self.event == 'wild':
@@ -2824,8 +2783,7 @@ class Match():
                 dict = Card.green_dict
             if color == 'yellow':
                 dict = Card.yellow_dict
-            card_graphic = dict[value] if value != '' else Card.wild_card
-            return card_graphic
+            return dict[value] if value != '' else Card.wild_card
 
         Update = lambda key, value, **kwargs: Match.window[key].Update(value, **kwargs)
         elem = lambda key: self.elements[key]
@@ -2893,21 +2851,17 @@ class Match():
         self.turn = self.getNextTurn()
 
     def getNextTurn(self, forceReverse=False):
-        if forceReverse:
-            reverse = not self.reverse
-        else:
-            reverse = self.reverse
+        reverse = not self.reverse if forceReverse else self.reverse
         currentIndex = self.turnList.index(self.turn)
         if not reverse:
             if (currentIndex + 1) == len(self.turnList):
                 return self.turnList[0]
             else:
                 return self.turnList[currentIndex + 1]
+        elif currentIndex == 0:
+            return self.turnList[len(self.turnList) - 1]
         else:
-            if currentIndex == 0:
-                return self.turnList[len(self.turnList) - 1]
-            else:
-                return self.turnList[currentIndex - 1]
+            return self.turnList[currentIndex - 1]
 
     def getPlayer(self, playerID):
         return self.players[playerID]
@@ -2942,7 +2896,7 @@ def mainMenu():
     window = sg.Window('Uno Setup', border_depth=0, layout=layout)
 
     current_player = 0
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         # print(event, values)
         if event == sg.WIN_CLOSED or event == 'Exit':
@@ -3005,8 +2959,6 @@ def mainMenu():
                 Elem(event).Update(str(event+1) +' - No Player')
                 Elem('_IN_').SetFocus()
                 Elem('_IN_').Update('', select=True)
-                for i in range(event):
-                    pass
                 player_types[event] = None
                 player_names[event] = ''
                 for i in range(event+1,4):

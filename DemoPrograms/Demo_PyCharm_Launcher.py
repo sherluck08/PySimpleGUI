@@ -53,7 +53,7 @@ def mini_launcher():
 
     while True:  # The Event Loop
         event, values = window.read()
-        if event == 'Exit' or event == sg.WINDOW_CLOSED:
+        if event in ['Exit', sg.WINDOW_CLOSED]:
             break
 
         file_to_edit = button_dict.get(event)  # Use button to find associated filename
@@ -73,7 +73,7 @@ def execute_command_blocking(command, *args):
 
     """
     print(f'Executing {command} with {args}')
-    expanded_args = [a for a in args]
+    expanded_args = list(args)
     try:
         sp = subprocess.Popen([command, expanded_args], shell=True,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)

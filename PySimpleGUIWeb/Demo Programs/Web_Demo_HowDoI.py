@@ -31,7 +31,7 @@ def HowDoI():
     window = sg.Window('How Do I?', layout, default_element_size=(30,1),
             font=('Helvetica',' 17'), default_button_element_size=(8,2),
             return_keyboard_events=False)
-    
+
     # ---===--- Loop taking in user input and using it to query HowDoI --- #
     command_history = []
     history_offset = 0
@@ -53,11 +53,9 @@ def HowDoI():
             window['query'].update('')
             window['history'].update('\n'.join(command_history[-3:]))
 
-        # if exit button or closed using X
-        elif event == None or event == 'EXIT':
+        elif event is None or event == 'EXIT':
             break
 
-        # scroll back in history
         elif 'Up' in event and len(command_history):
             command = command_history[history_offset]
 
@@ -65,7 +63,6 @@ def HowDoI():
             history_offset -= 1 * (history_offset > 0)
             window['query'].update(command)
 
-        # scroll forward in history
         elif 'Down' in event and len(command_history):
 
             # increment up to end of list
@@ -73,7 +70,6 @@ def HowDoI():
             command = command_history[history_offset]
             window['query'].update(command)
 
-        # clear currently line
         elif 'Escape' in event:
             window['query'].update('')
 

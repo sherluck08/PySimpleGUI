@@ -25,8 +25,7 @@ refresh_font = sg.user_settings_get_entry('-refresh font-', 'Courier 8')
 def convert_to_bytes(file_or_bytes, resize=None):
     image = PIL.Image.open(file_or_bytes)
     image.thumbnail(resize)
-    photo_img = PIL.ImageTk.PhotoImage(image)
-    return photo_img
+    return PIL.ImageTk.PhotoImage(image)
 
 
 def choose_theme(location):
@@ -61,9 +60,21 @@ def make_window(location):
     layout = [[sg.Image(k='-IMAGE-', enable_events=True)],
               [sg.pin(sg.Column(refresh_info, key='-REFRESH INFO-', element_justification='c', visible=sg.user_settings_get_entry('-show refresh-', True)))]]
 
-    window = sg.Window('Photo Frame', layout, location=location, no_titlebar=True, grab_anywhere=True, margins=(0, 0), element_justification='c', element_padding=(0, 0), alpha_channel=alpha, finalize=True, right_click_menu=right_click_menu, keep_on_top=True, enable_close_attempted_event=True)
-
-    return window
+    return sg.Window(
+        'Photo Frame',
+        layout,
+        location=location,
+        no_titlebar=True,
+        grab_anywhere=True,
+        margins=(0, 0),
+        element_justification='c',
+        element_padding=(0, 0),
+        alpha_channel=alpha,
+        finalize=True,
+        right_click_menu=right_click_menu,
+        keep_on_top=True,
+        enable_close_attempted_event=True,
+    )
 
 
 def main():
@@ -85,8 +96,8 @@ def main():
     single_image = sg.user_settings_get_entry('-single image-', None)
 
     if image_folder is None and single_image is None:
+        images = None
         while True:
-            images = None
             image_folder = sg.popup_get_folder('Choose location of your images', location=window.current_location(), keep_on_top=True)
             if image_folder is not None:
                 sg.user_settings_set_entry('-image_folder-', image_folder)

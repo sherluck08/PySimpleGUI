@@ -33,7 +33,7 @@ window = sg.Window('Window Title', layout, font='Any 16')
 
 while True:
     event, values = window.read(timeout=200)
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     # Loop through all of the LEDs and update. 25% of the time turn it off.
     for i in range(3):

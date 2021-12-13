@@ -38,7 +38,7 @@ def main():
     while True:  # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             window.close()
             window = make_window()
         elif event == 'Go':

@@ -83,9 +83,10 @@ def main(location):
                 top.items(), key=operator.itemgetter(1), reverse=True)
             if top_sorted:
                 top_sorted.pop(0)
-            display_string = ''
-            for proc, cpu in top_sorted:
-                display_string += '{:2.2f} {}\n'.format(cpu/10, proc)
+            display_string = ''.join(
+                '{:2.2f} {}\n'.format(cpu / 10, proc)
+                for proc, cpu in top_sorted
+            )
 
         # --------- Display timer and proceses in window --------
         window['text'].update('CPU ' + str(cpu_percent))

@@ -19,7 +19,7 @@ def main():
     png_files = [folder + '\\' + f for f in os.listdir(folder) if '.png' in f]
     filenames_only = [f for f in os.listdir(folder) if '.png' in f]
 
-    if len(png_files) == 0:
+    if not png_files:
         sg.popup('No PNG images in folder')
         return
 

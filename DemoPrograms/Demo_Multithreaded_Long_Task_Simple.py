@@ -26,7 +26,7 @@ def long_operation_thread(seconds, window):
     """
     progress = 0
     print('Thread started - will sleep for {} seconds'.format(seconds))
-    for i in range(int(seconds * 10)):
+    for _ in range(int(seconds * 10)):
         time.sleep(.1)  # sleep for a while
         progress += 100 / (seconds * 10)
         window.write_event_value('-PROGRESS-', progress)

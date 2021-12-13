@@ -50,9 +50,13 @@ def show_list_by_name(window):
         all_procs.append(pinfo)
     # all_procs = [[proc.cpu_percent(), proc.name(), proc.pid, proc.cmdline()] for proc in procs]
     sorted_by_cpu_procs = sorted(all_procs, key=operator.itemgetter(1), reverse=False)
-    display_list = []
-    for process in sorted_by_cpu_procs:
-        display_list.append('{:5d} {:5.2f} {} {}\n'.format(process[2], process[0] / 10, process[1], process[3]))
+    display_list = [
+        '{:5d} {:5.2f} {} {}\n'.format(
+            process[2], process[0] / 10, process[1], process[3]
+        )
+        for process in sorted_by_cpu_procs
+    ]
+
     window['-PROCESSES-'].update(display_list)
     return display_list
 
@@ -105,15 +109,17 @@ def main():
             # for process in sorted_by_cpu_procs:
             #     display_list.append('{:5d} {:5.2f} {}\n'.format(process[2], process[0]/10, process[1]))
             # window['-PROCESSES-'].update(display_list)
-            new_output = []
-            for line in display_list:
-                if values['-FILTER-'] in line.lower():
-                    new_output.append(line)
+            new_output = [
+                line
+                for line in display_list
+                if values['-FILTER-'] in line.lower()
+            ]
+
             window['-PROCESSES-'].update(new_output)
         elif event == 'Kill':
             processes_to_kill = values['-PROCESSES-']
             for proc in processes_to_kill:
-                pid = int(proc[0:5])
+                pid = int(proc[:5])
                 # if sg.popup_yes_no('About to kill {} {}'.format(pid, proc[12:]), keep_on_top=True) == 'Yes':
                 try:
                     kill_proc_tree(pid=pid)
@@ -127,19 +133,24 @@ def main():
             # for proc in procs:
             #     sg.Print(sg.obj_to_string_single_obj(proc))
             sorted_by_cpu_procs = sorted(all_procs, key=operator.itemgetter(0), reverse=True)
-            display_list = []
-            for process in sorted_by_cpu_procs:
-                display_list.append('{:5d} {:5.2f} {}\n'.format(process[2], process[0]/10, process[1]))
+            display_list = [
+                '{:5d} {:5.2f} {}\n'.format(
+                    process[2], process[0] / 10, process[1]
+                )
+                for process in sorted_by_cpu_procs
+            ]
+
             window['-PROCESSES-'].update(display_list)
         elif event == 'Edit Me':
             sg.execute_editor(__file__)
-        else:                   # was a typed character
-            if display_list is not None:
-                new_output = []
-                for line in display_list:
-                    if values['-FILTER-'] in line.lower():
-                        new_output.append(line)
-                window['-PROCESSES-'].update(new_output)
+        elif display_list is not None:
+            new_output = [
+                line
+                for line in display_list
+                if values['-FILTER-'] in line.lower()
+            ]
+
+            window['-PROCESSES-'].update(new_output)
     window.close()
 
 

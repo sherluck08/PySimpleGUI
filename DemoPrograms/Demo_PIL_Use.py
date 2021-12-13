@@ -51,9 +51,8 @@ def convert_to_bytes(file_or_bytes, resize=None, fill=False):
         new_width, new_height = resize
         scale = min(new_height / cur_height, new_width / cur_width)
         img = img.resize((int(cur_width * scale), int(cur_height * scale)), PIL.Image.ANTIALIAS)
-    if fill:
-        if resize is not None:
-            img = make_square(img, resize[0])
+    if fill and resize is not None:
+        img = make_square(img, resize[0])
     with io.BytesIO() as bio:
         img.save(bio, format="PNG")
         del img
@@ -64,7 +63,7 @@ def random_image():
 
 def make_toolbar():
     layout = [[sg.T('❎', enable_events=True, key='Exit')]]
-    for i in range(6):
+    for _ in range(6):
         layout += [[sg.B(image_data = convert_to_bytes(random_image(), (30,30))),
                     sg.B(image_data = convert_to_bytes(random_image(), (30,30)))]]
     return sg.Window('', layout, element_padding=(0,0), margins=(0,0), finalize=True, no_titlebar=True, grab_anywhere=True)
@@ -82,9 +81,9 @@ def main():
     window = sg.Window('Window Title', layout, finalize=True)
     toolbar = make_toolbar()
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event_window, event, values = sg.read_all_windows()
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == '+':
             size = (size[0]+20, size[1]+20)

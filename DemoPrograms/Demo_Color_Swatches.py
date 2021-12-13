@@ -672,12 +672,23 @@ color_map = {
 
 
 def make_window():
-    layout = [[sg.Text(f'Swatches for {len(color_list)} Colors', font='Default 14'),],
-              [sg.Text(f'Hover - see color "name"\nRight click - see hex value\nClick - see buttons & hex value copied to clipboard', font='Default 12')],
-              [sg.Text(f'PySimpleGUI version: {sg.ver}', font='_ 12')],
-              [sg.Text(f'Python version: {sys.version}', font='_ 12')],
-              [sg.Text(f'tkinter version: {sg.tclversion_detailed}', font='_ 12')],
-              ]
+    layout = [
+        [
+            sg.Text(
+                f'Swatches for {len(color_list)} Colors', font='Default 14'
+            ),
+        ],
+        [
+            sg.Text(
+                'Hover - see color "name"\nRight click - see hex value\nClick - see buttons & hex value copied to clipboard',
+                font='Default 12',
+            )
+        ],
+        [sg.Text(f'PySimpleGUI version: {sg.ver}', font='_ 12')],
+        [sg.Text(f'Python version: {sys.version}', font='_ 12')],
+        [sg.Text(f'tkinter version: {sg.tclversion_detailed}', font='_ 12')],
+    ]
+
 
 
     for rows in range(len(color_list)//COLORS_PER_ROW+1):
@@ -690,8 +701,12 @@ def make_window():
             except IndexError as e:
                 break
             except Exception as e:
-                sg.popup_error(f'Error while creating color window. Something with the Text elements perhaps....', e,
-                               f'rows = {rows}  i = {i}')
+                sg.popup_error(
+                    'Error while creating color window. Something with the Text elements perhaps....',
+                    e,
+                    f'rows = {rows}  i = {i}',
+                )
+
                 break
         layout.append(row)
 

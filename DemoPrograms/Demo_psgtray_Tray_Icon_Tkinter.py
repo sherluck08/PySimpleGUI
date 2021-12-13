@@ -43,7 +43,7 @@ def main():
         # IMPORTANT step. It's not required, but convenient. Set event to value from tray
         # if it's a tray event, change the event variable to be whatever the tray sent
         if event == tray.key:
-            sg.cprint(f'System Tray Event = ', values[event], c='white on red')
+            sg.cprint('System Tray Event = ', values[event], c='white on red')
             event = values[event]       # use the System Tray's event as if was from the window
 
         if event in (sg.WIN_CLOSED, 'Exit'):

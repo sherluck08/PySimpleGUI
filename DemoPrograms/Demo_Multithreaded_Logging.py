@@ -70,7 +70,7 @@ def main():
         event, values = window.read(timeout=100)
 
         if event == '-START-':
-            if appStarted is False:
+            if not appStarted:
                 threadedApp.start()
                 logger.debug('App started')
                 window['-START-'].update(disabled=True)

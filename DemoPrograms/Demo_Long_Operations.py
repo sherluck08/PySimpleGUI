@@ -86,10 +86,10 @@ def main():
 
     window = sg.Window('Window Title', layout)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         elif event == 'Go':
             window['-STATUS-'].update('Calling your function...')
@@ -133,10 +133,10 @@ def old_main():
 
     window = sg.Window('Window Title', layout)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         elif event == 'Go':
             if values['-IN-'].isnumeric():

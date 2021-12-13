@@ -41,7 +41,11 @@ def toggle_button(button_color=None, size=(100, 40), on=True):
     """
     pad, radius, spacing = 5, 10, 5
     w, h = size
-    c1, c2 = button_color if button_color else (sg.theme_input_background_color(), sg.theme_background_color())
+    c1, c2 = button_color or (
+        sg.theme_input_background_color(),
+        sg.theme_background_color(),
+    )
+
     im = Image.new("RGBA", (w, h), (255, 255, 255, 0))
     draw = ImageDraw.Draw(im)
     draw.rounded_rectangle((0, 0, w - 1, h - 1), fill=c1, width=3, radius=radius)

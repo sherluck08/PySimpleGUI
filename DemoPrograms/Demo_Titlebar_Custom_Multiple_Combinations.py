@@ -77,11 +77,18 @@ def create_window(title, bar_text_color, bar_background_color):
         [sg.Input('Color of input text', focus=True, key='-IN-'), sg.Text(size=(12, 1), key='-OUT-')],
         [sg.Button('Go'), sg.Button('Next'), sg.B('New Theme'), sg.Button('Exit')]]
 
-    window = sg.Window(title, layout, resizable=True, no_titlebar=True, grab_anywhere=False, keep_on_top=True, margins=(0, 0), finalize=True)
-
     # window['-C-'].expand(True, False, False)  # expand the titlebar's rightmost column so that it resizes correctly
 
-    return window
+    return sg.Window(
+        title,
+        layout,
+        resizable=True,
+        no_titlebar=True,
+        grab_anywhere=False,
+        keep_on_top=True,
+        margins=(0, 0),
+        finalize=True,
+    )
 
 
 def choose_theme():
@@ -100,11 +107,7 @@ def choose_theme():
             break
 
     window.close()
-    if event is None:
-        theme = sg.theme()
-    else:
-        theme = values['-LIST-'][0]
-
+    theme = sg.theme() if event is None else values['-LIST-'][0]
     sg.theme(theme)
     color_pairs = [['1 - Button Colors', sg.theme_button_color()[0], sg.theme_button_color()[1]],
                    ['2 - Reversed Button Colors', sg.theme_button_color()[1], sg.theme_button_color()[0]],

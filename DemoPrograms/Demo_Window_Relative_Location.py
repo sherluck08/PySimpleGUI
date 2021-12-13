@@ -25,8 +25,7 @@ def second_window():
     layout = [[sg.Text('Window 2\nrelative_location=(0,-150)')],
               [sg.Button('Exit')]]
 
-    window = sg.Window('Window 2', layout, relative_location=(0,-150), finalize=True)
-    return window
+    return sg.Window('Window 2', layout, relative_location=(0,-150), finalize=True)
 
 
 def main():
@@ -38,11 +37,11 @@ def main():
 
     window2 = second_window()
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         window, event, values = sg.read_all_windows()
-        if window == None:      # If all windows were closed
+        if window is None:      # If all windows were closed
             break
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             window.close()
         if event == 'Popup':
             sg.popup('Popups will go to the center of course!')

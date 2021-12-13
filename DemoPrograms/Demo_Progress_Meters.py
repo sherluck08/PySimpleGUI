@@ -152,7 +152,7 @@ def custom_meter_example():
     for i in range(10000):
         # check to see if the cancel button was clicked and exit loop if clicked
         event, values = window.read(timeout=0)
-        if event == 'Cancel' or event == None:
+        if event == 'Cancel' or event is None:
             break
         # update bar with loop value +1 so that bar eventually reaches the maximum
         progress_bar.update_bar(i+1, 10000)
@@ -210,7 +210,7 @@ def demo_iterable_progress_bar():
         print(value)
 
     # Since the progress_bar is an iterator, you can use it within a list comprehension
-    my_list = [x for x in progress_bar('bar1', my_list, title='Second bar Test')]
+    my_list = list(progress_bar('bar1', my_list, title='Second bar Test'))
 
 
 demo_iterable_progress_bar()

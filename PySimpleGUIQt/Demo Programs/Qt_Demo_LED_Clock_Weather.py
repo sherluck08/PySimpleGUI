@@ -37,13 +37,48 @@ class GUI():
              sg.Image(data_base64=ledblank[22:], key='_min2_', pad=(0,0))], ]
 
         # Create the weather columns layout
-        weather_cols = []
-        for i in range(NUM_COLS):
-            weather_cols.append(
-                [[sg.T('', size=(60,30), font='Any 20', justification='center', key='_DAY_' + str(i)), ],
-                 [sg.Image(data_base64=w1[22:], background_color='black', key='_icon_'+str(i), pad=((4, 0), 3)), ],
-                 [sg.T('--', size=(60,50), justification='center', font='Any 20', key='_high_' + str(i), pad=((10, 0), 3))],
-                 [sg.T('--', size=(60,50), justification='center', font='Any 20', key='_low_' + str(i), pad=((10, 0), 3))]])
+        weather_cols = [
+            [
+                [
+                    sg.T(
+                        '',
+                        size=(60, 30),
+                        font='Any 20',
+                        justification='center',
+                        key='_DAY_' + str(i),
+                    ),
+                ],
+                [
+                    sg.Image(
+                        data_base64=w1[22:],
+                        background_color='black',
+                        key='_icon_' + str(i),
+                        pad=((4, 0), 3),
+                    ),
+                ],
+                [
+                    sg.T(
+                        '--',
+                        size=(60, 50),
+                        justification='center',
+                        font='Any 20',
+                        key='_high_' + str(i),
+                        pad=((10, 0), 3),
+                    )
+                ],
+                [
+                    sg.T(
+                        '--',
+                        size=(60, 50),
+                        justification='center',
+                        font='Any 20',
+                        key='_low_' + str(i),
+                        pad=((10, 0), 3),
+                    )
+                ],
+            ]
+            for i in range(NUM_COLS)
+        ]
 
         # Create the overall layout
         layout = [[sg.Column(clock, background_color='black')],
@@ -128,7 +163,10 @@ def led_clock():
         gui.update_clock()
         # update weather once ever 6 hours
         now = datetime.datetime.now()
-        if last_update_time == 0 or (now-last_update_time).seconds >= 60*60*6:
+        if (
+            last_update_time == 0
+            or (now - last_update_time).seconds >= 60 ** 2 * 6
+        ):
             print('*** Updating Weather ***')
             last_update_time = now
             gui.update_weather()

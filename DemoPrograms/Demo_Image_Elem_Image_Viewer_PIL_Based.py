@@ -78,7 +78,7 @@ while True:
     event, values = window.read()
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     if event == '-FOLDER-':                         # Folder name was filled in, make a list of files in the folder
         folder = values['-FOLDER-']
@@ -89,7 +89,7 @@ while True:
         fnames = [f for f in file_list if os.path.isfile(
             os.path.join(folder, f)) and f.lower().endswith((".png", ".jpg", "jpeg", ".tiff", ".bmp"))]
         window['-FILE LIST-'].update(fnames)
-    elif event == '-FILE LIST-':    # A file was chosen from the listbox
+    elif event == '-FILE LIST-':# A file was chosen from the listbox
         try:
             filename = os.path.join(values['-FOLDER-'], values['-FILE LIST-'][0])
             window['-TOUT-'].update(filename)
@@ -100,6 +100,5 @@ while True:
             window['-IMAGE-'].update(data=convert_to_bytes(filename, resize=new_size))
         except Exception as E:
             print(f'** Error {E} **')
-            pass        # something weird happened making the full filename
 # --------------------------------- Close & Exit ---------------------------------
 window.close()

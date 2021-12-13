@@ -47,10 +47,10 @@ def main():
     window.move(window.current_location()[0], window.current_location()[1]-300)
     downloading, max_value = False, 0
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         # print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Go' and not downloading:
             threading.Thread(target=the_thread, args=(window,), daemon=True).start()

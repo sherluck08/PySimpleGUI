@@ -20,10 +20,16 @@ from webbrowser import open_new_tab
 settings = sg.UserSettings()
 
 def make_search_row(item_number):
-    search_layout = [sg.Combo(sorted(settings.get('-search string-', [])), settings['-last search-'], size=(45,1), k=('-SEARCH STRING-', item_number)),
+    return [
+        sg.Combo(
+            sorted(settings.get('-search string-', [])),
+            settings['-last search-'],
+            size=(45, 1),
+            k=('-SEARCH STRING-', item_number),
+        ),
         # sg.In(key=('-SEARCH STRING-', item_number)),
-                     sg.CB('Require', key=('-SEARCH REQUIRED-', item_number))]
-    return search_layout
+        sg.CB('Require', key=('-SEARCH REQUIRED-', item_number)),
+    ]
 
 def settings_window():
     def input_line(text, key, default):
@@ -113,9 +119,8 @@ def main():
         event, values = window.read()
         if event in (None, 'Exit'):
             break
-        if event == 'Settings':
-            if settings_window():
-                reddit = praw.Reddit(**reddit_praw_parameters)
+        if event == 'Settings' and settings_window():
+            reddit = praw.Reddit(**reddit_praw_parameters)
 
         subs_to_read = values['-SUBS-']
         if event.startswith('Start'):
@@ -123,10 +128,9 @@ def main():
             results = {}
             search_list = []    # make a list of tuples (search term, bool required)
             for v in values:
-                if isinstance(v, tuple):     # if value is a tuple
-                    if v[0] == '-SEARCH STRING-':
-                        search_list.append((values[v].lower(), values[('-SEARCH REQUIRED-', v[1])]))
-                        settings['-search string-'] = list(set(settings.get('-search string-', []) + [values['-SEARCH STRING-', v[1]], ]))
+                if isinstance(v, tuple) and v[0] == '-SEARCH STRING-':
+                    search_list.append((values[v].lower(), values[('-SEARCH REQUIRED-', v[1])]))
+                    settings['-search string-'] = list(set(settings.get('-search string-', []) + [values['-SEARCH STRING-', v[1]], ]))
             settings['-last search-'] = search_list[0][0]
             print('last search = ', settings['-last search-'])
             print('Search list = ', search_list)
@@ -158,7 +162,15 @@ def main():
                         if values['-BROWSER-']:
                             open_new_tab(submission.url)
                         elif values['-POPUP-']:
-                            sg.popup_scrolled(f'Search found', submission.url, f'\nTITLE: {title}', str(text), title=title, non_blocking=True)
+                            sg.popup_scrolled(
+                                'Search found',
+                                submission.url,
+                                f'\nTITLE: {title}',
+                                str(text),
+                                title=title,
+                                non_blocking=True,
+                            )
+
                     window['-OUT POST-'].update(str(title))
                     if values['-COMMENTS-']:  # if should also search comments
                         for comment in submission.comments:
@@ -180,7 +192,15 @@ def main():
                                     open_new_tab(submission.url)
                                     opened = True
                                 elif values['-POPUP-']:
-                                    sg.popup_scrolled(f'Search found in comment', submission.url, f'\nTITLE: {title}', comment_text, title=title, non_blocking=True)
+                                    sg.popup_scrolled(
+                                        'Search found in comment',
+                                        submission.url,
+                                        f'\nTITLE: {title}',
+                                        comment_text,
+                                        title=title,
+                                        non_blocking=True,
+                                    )
+
                                 window.refresh()
                     event, values = window.read(timeout=0)
                     if event == '-LISTBOX-':            # experimental - see if clicked on an item in the list while it's still being built

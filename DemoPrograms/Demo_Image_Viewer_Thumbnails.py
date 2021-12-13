@@ -72,7 +72,7 @@ def display_image_window(filename):
         layout = [[sg.Image(data=convert_to_bytes(filename, IMAGE_SIZE), enable_events=True)]]
         e,v = sg.Window(filename, layout, modal=True, element_padding=(0,0), margins=(0,0)).read(close=True)
     except Exception as e:
-        print(f'** Display image error **', e)
+        print('** Display image error **', e)
         return
 
 
@@ -111,7 +111,7 @@ def display_images(t_win, offset, files):
             row += 1
 
         offset += 1
-    if not (row == 0 and col == 0):
+    if row != 0 or col != 0:
         while row != THUMBNAILS_PER_PAGE[1]:
             t_win[(row, col)].update(image_data=sg.DEFAULT_BASE64_ICON)
             currently_displaying[(row, col)] = None
@@ -136,7 +136,7 @@ def main():
         if win == sg.WIN_CLOSED:            # if all windows are closed
             break
 
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
 
         if isinstance(event, tuple):
@@ -152,8 +152,7 @@ def main():
             offset, currently_displaying = display_images(t_win, offset, files)
         elif event == '-PREV-' or event.endswith('Up'):
             offset -= THUMBNAILS_PER_PAGE[0]*THUMBNAILS_PER_PAGE[1]*2
-            if offset < 0:
-                offset = 0
+            offset = max(offset, 0)
             offset, currently_displaying = display_images(t_win, offset, files)
 
 

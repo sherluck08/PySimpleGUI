@@ -25,7 +25,7 @@ def number(max_val=1000):
     return random.randint(0, max_val)
 
 def make_table(num_rows, num_cols):
-    data = [[j for j in range(num_cols)] for i in range(num_rows)]
+    data = [list(range(num_cols)) for i in range(num_rows)]
     data[0] = [word() for __ in range(num_cols)]
     for i in range(1, num_rows):
         data[i] = [i, word(), *[number() for i in range(num_cols - 1)]]
@@ -87,13 +87,11 @@ while True:
         window['-TABLE-'].update(values=data[1:][:])
     elif event == 'Change Colors':
         window['-TABLE-'].update(row_colors=((8, 'white', 'red'), (9, 'green')))
-    if isinstance(event, tuple):
-        # TABLE CLICKED Event has value in format ('-TABLE=', '+CLICKED+', (row,col))
-        if event[0] == '-TABLE-':
-            if event[2][0] == -1 and event[2][1] != -1:           # Header was clicked and wasn't the "row" column
-                col_num_clicked = event[2][1]
-                new_table = sort_table(data[1:][:],(col_num_clicked, 0))
-                window['-TABLE-'].update(new_table)
-                data = [data[0]] + new_table
-            window['-CLICKED-'].update(f'{event[2][0]},{event[2][1]}')
+    if isinstance(event, tuple) and event[0] == '-TABLE-':
+        if event[2][0] == -1 and event[2][1] != -1:           # Header was clicked and wasn't the "row" column
+            col_num_clicked = event[2][1]
+            new_table = sort_table(data[1:][:],(col_num_clicked, 0))
+            window['-TABLE-'].update(new_table)
+            data = [data[0]] + new_table
+        window['-CLICKED-'].update(f'{event[2][0]},{event[2][1]}')
 window.close()

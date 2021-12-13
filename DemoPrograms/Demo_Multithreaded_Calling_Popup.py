@@ -50,10 +50,10 @@ def main():
     window = sg.Window('Window Title', layout, finalize=True, font='_ 15')
 
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == '-POPUP-':
             sg.popup_non_blocking('This is a popup that the thread wants to show',

@@ -28,7 +28,7 @@ window1, window2 = make_win1(), None        # start off with 1 window open
 
 while True:             # Event Loop
     window, event, values = sg.read_all_windows()
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         window.close()
         if window == window2:       # if closing win 2, mark as closed
             window2 = None

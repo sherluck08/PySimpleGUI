@@ -393,9 +393,8 @@ class Element():
     def _FindReturnKeyBoundButton(self, form):
         for row in form.Rows:
             for element in row:
-                if element.Type == ELEM_TYPE_BUTTON:
-                    if element.BindReturnKey:
-                        return element
+                if element.Type == ELEM_TYPE_BUTTON and element.BindReturnKey:
+                    return element
                 if element.Type == ELEM_TYPE_COLUMN:
                     rc = self._FindReturnKeyBoundButton(element)
                     if rc is not None:
@@ -430,13 +429,12 @@ class Element():
         """
         if self.Widget is not None:
             return True
-        else:
-            warnings.warn('You cannot Update element with key = {} until the window has been Read or Finalized'.format(self.Key), UserWarning)
-            if not SUPPRESS_ERROR_POPUPS:
-                popup_error('Unable to complete operation on element with key {}'.format(self.Key),
-                    'You cannot perform operations (such as calling update) on an Element until Window is read or finalized.',
-                         'Adding a "finalize=True" parameter to your Window creation will likely fix this.', image=_random_error_icon())
-            return False
+        warnings.warn('You cannot Update element with key = {} until the window has been Read or Finalized'.format(self.Key), UserWarning)
+        if not SUPPRESS_ERROR_POPUPS:
+            popup_error('Unable to complete operation on element with key {}'.format(self.Key),
+                'You cannot perform operations (such as calling update) on an Element until Window is read or finalized.',
+                     'Adding a "finalize=True" parameter to your Window creation will likely fix this.', image=_random_error_icon())
+        return False
 
 
     def Update(self, widget, background_color=None, text_color=None, font=None, visible=None):
@@ -741,7 +739,7 @@ class Combo(Element):
         # self.InitializeAsDisabled = disabled
         self.Disabled = disabled
         self.Readonly = readonly
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.VisibleItems = visible_items
         self.AutoComplete = auto_complete
@@ -758,7 +756,7 @@ class Combo(Element):
     def Update(self, value=None, values=None, set_to_index=None, disabled=None, readonly=None,  background_color=None, text_color=None, font=None, visible=None):
         if values is not None:
             self.Values = values
-            for i in range(self.QT_ComboBox.count()):
+            for _ in range(self.QT_ComboBox.count()):
                 self.QT_ComboBox.removeItem(0)
             self.QT_ComboBox.addItems(values)
         if value is not None:
@@ -828,7 +826,7 @@ class OptionMenu(Element):
         self.DefaultValue = default_value
         self.TKOptionMenu = None
         self.Disabled = disabled
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
 
         super().__init__(ELEM_TYPE_INPUT_OPTION_MENU, size=size, auto_size_text=auto_size_text, background_color=bg,
@@ -908,7 +906,7 @@ class Listbox(Element):
             self.SelectMode = SELECT_MODE_CONTIGUOUS
         else:
             self.SelectMode = DEFAULT_LISTBOX_SELECT_MODE
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.Widget = self.QT_ListWidget = None                 # type: QListWidget
         tsize = size                # convert tkinter size to pixels
@@ -926,7 +924,7 @@ class Listbox(Element):
     def Update(self, values=None, disabled=None, set_to_index=None,background_color=None, text_color=None, font=None, visible=None):
         if values is not None:
             self.Values = values
-            for i in range(self.QT_ListWidget.count()):
+            for _ in range(self.QT_ListWidget.count()):
                 self.QT_ListWidget.takeItem(0)
             items = [str(v) for v in self.Values]
             self.QT_ListWidget.addItems(items)
@@ -960,12 +958,8 @@ class Listbox(Element):
 
         :return: (List[Any]) The currently selected items in the listbox
         """
-        value = []
         selected_items = [item.text() for item in self.QT_ListWidget.selectedItems()]
-        for v in self.Values:
-            if str(v) in selected_items:
-                value.append(v)
-        return value
+        return [v for v in self.Values if str(v) in selected_items]
 
     get_list_values = GetListValues
     set_value = SetValue
@@ -1116,7 +1110,7 @@ class Checkbox(Element):
         self.Value = None
         self.TKCheckbutton = None
         self.Disabled = disabled
-        self.TextColor = text_color if text_color else DEFAULT_TEXT_COLOR
+        self.TextColor = text_color or DEFAULT_TEXT_COLOR
         self.ChangeSubmits = change_submits or enable_events
         self.Widget = self.QT_Checkbox = None           # type: QCheckBox
 
@@ -1201,7 +1195,7 @@ class Spin(Element):
         self.DefaultValue = initial_value
         self.ChangeSubmits = change_submits or enable_events
         self.Disabled = disabled
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.Widget = self.QT_Spinner = None            # type: StringBox
 
@@ -1314,7 +1308,7 @@ class Multiline(Element):
         key = key if key is not None else k
         self.DefaultText = default_text
         self.EnterSubmits = enter_submits
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         self.Focus = focus
         self.do_not_clear = do_not_clear
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
@@ -1383,7 +1377,7 @@ class Multiline(Element):
         if value is not None and not append:
             self.DefaultText = value
             self.QT_TextEdit.setText(str(value))
-        elif value is not None and append:
+        elif value is not None:
             self.DefaultText = value
             # self.QT_TextEdit.setText(self.QT_TextEdit.toPlainText() + str(value)) # original code
             # self.QT_TextEdit.append(str(value))   # can't use because adds a newline
@@ -1496,7 +1490,7 @@ class MultilineOutput(Element):
         key = key if key is not None else k
         self.DefaultText = default_text
         self.EnterSubmits = enter_submits
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         self.Focus = focus
         self.do_not_clear = do_not_clear
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
@@ -1511,11 +1505,11 @@ class MultilineOutput(Element):
 
 
     def Update(self, value=None, disabled=None, append=False, autoscroll=None, background_color=None, text_color=None, font=None, text_color_for_value=None, background_color_for_value=None, visible=None):
-        if value is not None and not append:
-            self.QT_TextBrowser.setText(str(value))
-        elif value is not None and append:
-            self.QT_TextBrowser.insertPlainText(str(value))
-            # self.QT_TextBrowser.moveCursor(QtGui.QTextCursor.End)
+        if value is not None:
+            if not append:
+                self.QT_TextBrowser.setText(str(value))
+            else:
+                self.QT_TextBrowser.insertPlainText(str(value))
         if disabled == True:
             self.QT_TextBrowser.setDisabled(True)
         elif disabled == False:
@@ -1601,7 +1595,7 @@ class Text(Element):
         """
         key = key if key is not None else k
         self.DisplayText = str(text)
-        self.TextColor = text_color if text_color else DEFAULT_TEXT_COLOR
+        self.TextColor = text_color or DEFAULT_TEXT_COLOR
         self.Justification = justification or 'left'
         self.Relief = relief
         self.ClickSubmits = click_submits or enable_events
@@ -1612,8 +1606,21 @@ class Text(Element):
             bg = background_color
         self.Widget = self.QT_Label = None              # type: QLabel
 
-        super().__init__(ELEM_TYPE_TEXT, size, auto_size_text, background_color=bg, font=font if font else DEFAULT_FONT,
-                         text_color=self.TextColor, visible=visible, pad=pad, key=key, tooltip=tooltip, size_px=size_px, metadata=metadata)
+        super().__init__(
+            ELEM_TYPE_TEXT,
+            size,
+            auto_size_text,
+            background_color=bg,
+            font=font or DEFAULT_FONT,
+            text_color=self.TextColor,
+            visible=visible,
+            pad=pad,
+            key=key,
+            tooltip=tooltip,
+            size_px=size_px,
+            metadata=metadata,
+        )
+
         return
 
     def _QtCallbackTextClicked(self, event):
@@ -1676,7 +1683,7 @@ class Output(Element):
         """
         key = key if key is not None else k
         self._TKOut = None
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.Widget = self.QT_TextBrowser = None            # type: QTextBrowser
         tsize = size_px if size_px != (None,None) else _convert_tkinter_size_to_Qt(size, scaling=DEFAULT_PIXELS_TO_CHARS_SCALING_MULTILINE_TEXT,height_cutoff=DEFAULT_PIXEL_TO_CHARS_CUTOFF_MULTILINE) if size[0] is not None else size
@@ -1799,7 +1806,7 @@ class Button(Element):
             except Exception as e:
                 print('* cprint warning * you messed up with color formatting', e)
 
-        self.ButtonColor = button_color if button_color else DEFAULT_BUTTON_COLOR
+        self.ButtonColor = button_color or DEFAULT_BUTTON_COLOR
         self.TextColor = self.ButtonColor[0]
         self.BackgroundColor = self.ButtonColor[1]
         self.ImageFilename = image_filename
@@ -1835,8 +1842,6 @@ class Button(Element):
             self.ParentForm.LastButtonClicked = self.Key
         else:
             self.ParentForm.LastButtonClicked = self.ButtonText
-        if self.ParentForm.CurrentlyRunningMainloop:
-            pass  # kick out of loop if read was called
 
     # -------  Button Callback  ------- #
     def _ButtonCallBack(self):
@@ -1952,7 +1957,6 @@ class Button(Element):
             self.ParentForm.FormRemainedOpen = True
             if self.ParentForm.CurrentlyRunningMainloop:
                 self.ParentForm.QTApplication.exit()
-                pass # TODO # kick the users out of the mainloop
         return
 
     def Update(self, text=None, button_color=(None, None), disabled=None, image_data=None, image_filename=None, font=None, visible=None):
@@ -2059,7 +2063,7 @@ class ButtonMenu(Element):
         self.MenuDefinition = menu_def
         self.AutoSizeButton = auto_size_button
         self.ButtonText = button_text
-        self.ButtonColor = button_color if button_color else DEFAULT_BUTTON_COLOR
+        self.ButtonColor = button_color or DEFAULT_BUTTON_COLOR
         self.TextColor = self.ButtonColor[0]
         self.BackgroundColor = self.ButtonColor[1]
         self.BorderWidth = border_width
@@ -2150,11 +2154,11 @@ class ProgressBar(Element):
         self.TKProgressBar = None
         self.Cancelled = False
         self.NotRunning = True
-        self.Orientation = orientation if orientation else DEFAULT_METER_ORIENTATION
+        self.Orientation = orientation or DEFAULT_METER_ORIENTATION
         self.BarColor = bar_color if bar_color != (None, None) else DEFAULT_PROGRESS_BAR_COLOR
-        self.BarStyle = style if style else DEFAULT_PROGRESS_BAR_STYLE
+        self.BarStyle = style or DEFAULT_PROGRESS_BAR_STYLE
         self.BorderWidth = border_width if border_width is not None else DEFAULT_PROGRESS_BAR_BORDER_WIDTH
-        self.Relief = relief if relief else DEFAULT_PROGRESS_BAR_RELIEF
+        self.Relief = relief or DEFAULT_PROGRESS_BAR_RELIEF
         self.BarExpired = False
         self.StartValue = start_value
         tsize = size
@@ -2367,9 +2371,14 @@ class Graph(Element):
 
         qcolor = QColor(color)
         pen = QPen(qcolor, width)
-        line = self.QT_QGraphicsScene.addLine(self.x+converted_point_from[0],self.y+ converted_point_from[1], self.x+converted_point_to[0],self.y+ converted_point_to[1], pen=pen)
         # self.QT_QGraphicsItemGroup.addToGroup(line)
-        return line
+        return self.QT_QGraphicsScene.addLine(
+            self.x + converted_point_from[0],
+            self.y + converted_point_from[1],
+            self.x + converted_point_to[0],
+            self.y + converted_point_to[1],
+            pen=pen,
+        )
 
     def DrawRectangle(self, top_left, bottom_right, fill_color=None, line_color=None):
         converted_point_top_left = self._convert_xy_to_canvas_xy(top_left[0], top_left[1])
@@ -2392,9 +2401,14 @@ class Graph(Element):
         pen = QPen(qcolor)
         qcolor = QColor(fill_color)
         brush = QBrush(qcolor)
-        circle_id = self.QT_QGraphicsScene.addEllipse(self.x + converted_point[0] - radius, self.y + converted_point[1] - radius,
-                                                      radius * 2, radius * 2, pen=pen, brush=brush)
-        return circle_id            # type: QGraphicsEllipseItem
+        return self.QT_QGraphicsScene.addEllipse(
+            self.x + converted_point[0] - radius,
+            self.y + converted_point[1] - radius,
+            radius * 2,
+            radius * 2,
+            pen=pen,
+            brush=brush,
+        )
 
     def RelocateFigure(self, id, x, y):
         id=id           # type: QtWidgets.QGraphicsEllipseItem
@@ -2635,8 +2649,7 @@ class Frame(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
     def Update(self, visible=None):
         super().Update(self.QT_QGroupBox, visible=visible)
@@ -2782,8 +2795,7 @@ class Tab(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
 
     def Select(self):
@@ -2890,8 +2902,7 @@ class TabGroup(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
     def FindKeyFromTabName(self, tab_name):
         for row in self.Rows:
@@ -2986,9 +2997,9 @@ class Slider(Element):
         self.TKScale = None
         self.Range = (1, 10) if range == (None, None) else range
         self.DefaultValue = self.Range[0] if default_value is None else default_value
-        self.Orientation = orientation if orientation else DEFAULT_SLIDER_ORIENTATION
-        self.BorderWidth = border_width if border_width else DEFAULT_SLIDER_BORDER_WIDTH
-        self.Relief = relief if relief else DEFAULT_SLIDER_RELIEF
+        self.Orientation = orientation or DEFAULT_SLIDER_ORIENTATION
+        self.BorderWidth = border_width or DEFAULT_SLIDER_BORDER_WIDTH
+        self.Relief = relief or DEFAULT_SLIDER_RELIEF
         self.Resolution = 1 if resolution is None else resolution
         self.ChangeSubmits = change_submits or enable_events
         self.Disabled = disabled
@@ -3084,9 +3095,9 @@ class Dial(Element):
         self.TKScale = None
         self.Range = (1, 10) if range == (None, None) else range
         self.DefaultValue = self.Range[0] if default_value is None else default_value
-        self.Orientation = orientation if orientation else DEFAULT_SLIDER_ORIENTATION
-        self.BorderWidth = border_width if border_width else DEFAULT_SLIDER_BORDER_WIDTH
-        self.Relief = relief if relief else DEFAULT_SLIDER_RELIEF
+        self.Orientation = orientation or DEFAULT_SLIDER_ORIENTATION
+        self.BorderWidth = border_width or DEFAULT_SLIDER_BORDER_WIDTH
+        self.Relief = relief or DEFAULT_SLIDER_RELIEF
         self.Resolution = 1 if resolution is None else resolution
         self.ChangeSubmits = change_submits or enable_events
         self.Disabled = disabled
@@ -3102,13 +3113,8 @@ class Dial(Element):
 
 
     def Update(self, value=None, range=(None, None), disabled=None, visible=None):
-        if value is not None:           # TODO clearly not done!
-            pass
+        if value is not None:       # TODO clearly not done!
             self.DefaultValue = value
-        if disabled == True:
-            pass
-        elif disabled == False:
-            pass
         super().Update(self.QT_Dial, visible=visible)
 
 
@@ -3224,8 +3230,7 @@ class Column(Element):
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
 
     def Update(self, visible=None):
@@ -3453,25 +3458,15 @@ class Table(Element):
     def _treeview_selected(self, event):
         if self.ChangeSubmits:
             MyForm = self.ParentForm
-            if self.Key is not None:
-                self.ParentForm.LastButtonClicked = self.Key
-            else:
-                self.ParentForm.LastButtonClicked = ''
+            self.ParentForm.LastButtonClicked = self.Key if self.Key is not None else ''
             self.ParentForm.FormRemainedOpen = True
-            if self.ParentForm.CurrentlyRunningMainloop:
-                pass # TODO Quit mainloop
 
 
     def treeview_double_click(self, event):
         if self.BindReturnKey:
             MyForm = self.ParentForm
-            if self.Key is not None:
-                self.ParentForm.LastButtonClicked = self.Key
-            else:
-                self.ParentForm.LastButtonClicked = ''
+            self.ParentForm.LastButtonClicked = self.Key if self.Key is not None else ''
             self.ParentForm.FormRemainedOpen = True
-            if self.ParentForm.CurrentlyRunningMainloop:
-                pass # TODO Quit mainloop
 
 
     class QTTableWidget(QTableWidget):
@@ -3603,7 +3598,7 @@ class Tree(Element):
 
     def _treeview_selected(self, event):
         selections = 000000
-        self.SelectedRows = [x for x in selections]
+        self.SelectedRows = list(selections)
         # print('Got selection')
         if self.ChangeSubmits:
             _element_callback_quit_mainloop(self)
@@ -4062,10 +4057,10 @@ class Window:
         self.DefaultButtonElementSize = _convert_tkinter_size_to_Qt(default_button_element_size) if default_button_element_size != (
             None, None) else DEFAULT_BUTTON_ELEMENT_SIZE
         self.Location = location
-        self.ButtonColor = button_color if button_color else DEFAULT_BUTTON_COLOR
-        self.BackgroundColor = background_color if background_color else DEFAULT_BACKGROUND_COLOR
+        self.ButtonColor = button_color or DEFAULT_BUTTON_COLOR
+        self.BackgroundColor = background_color or DEFAULT_BACKGROUND_COLOR
         self.ParentWindow = None
-        self.Font = font if font else DEFAULT_FONT
+        self.Font = font or DEFAULT_FONT
         self.RadioDict = {}
         self.BorderDepth = border_depth
         self.WindowIcon = icon if icon is not None else Window.user_defined_icon
@@ -4244,8 +4239,7 @@ class Window:
     def _GetElementAtLocation(self, location):
         (row_num, col_num) = location
         row = self.Rows[row_num]
-        element = row[col_num]
-        return element
+        return row[col_num]
 
     def _GetDefaultElementSize(self):
         return self.DefaultElementSize

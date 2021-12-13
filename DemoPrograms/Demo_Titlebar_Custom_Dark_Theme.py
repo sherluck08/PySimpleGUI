@@ -87,10 +87,10 @@ def main():
 
     window = sg.Window(title, layout, resizable=True, no_titlebar=True, keep_on_top=True, margins=(0,0), finalize=True)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == '-MINIMIZE-':
             window.hide()

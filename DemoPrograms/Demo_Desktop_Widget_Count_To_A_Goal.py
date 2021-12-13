@@ -359,7 +359,7 @@ def main():
     window['-MAIN INFO-'].update(current_count)
     window['-GOAL-'].update(current_goal)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         window.gauge.change()
         new_angle = current_count / current_goal * 180
         window.gauge.change(degree=new_angle, step=180)
@@ -370,7 +370,7 @@ def main():
         # -------------- Start of normal event loop --------------
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == 'Edit Me':
             sg.execute_editor(__file__)

@@ -19,77 +19,380 @@ def main():
     # sg.theme('Light Green 6')
     # sg.theme('Dark Red')
     sg.theme('Dark Green 7')
-    layout = [  [sg.Text('Some Base64 Buttons', font='Default 16')],
-                [sg.Text('The size is modified using the image_subsample parameter')],
-                [sg.Text("All of these buttons are contained in this program's source code")],
-                [sg.Text('These are not super-attractive buttons... better are coming... perhaps with your help.')],
-                [sg.Text('The point is that it is not difficult for you to add button graphics to your GUI')],
+    layout = [
+        [sg.Text('Some Base64 Buttons', font='Default 16')],
+        [sg.Text('The size is modified using the image_subsample parameter')],
+        [
+            sg.Text(
+                "All of these buttons are contained in this program's source code"
+            )
+        ],
+        [
+            sg.Text(
+                'These are not super-attractive buttons... better are coming... perhaps with your help.'
+            )
+        ],
+        [
+            sg.Text(
+                'The point is that it is not difficult for you to add button graphics to your GUI'
+            )
+        ],
+        [
+            sg.Button(
+                'Rect',
+                image_data=r1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Rect',
+                image_data=g1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Rect',
+                image_data=grey1,
+                button_color=('white', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Rect',
+                image_data=g2,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Rect',
+                image_data=o1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Rect',
+                image_data=y1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Rect',
+                image_data=p1,
+                image_subsample=3,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+            ),
+        ],
+        [
+            sg.Text(
+                'These oval buttons are 1/2 of their original size. (image_subsample=2)'
+            )
+        ],
+        [
+            sg.Button(
+                'Oval',
+                image_data=bo1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Oval',
+                image_data=ro1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Oval',
+                image_data=go1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Oval',
+                image_data=go2,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Oval',
+                image_data=oo1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Oval',
+                image_data=yo1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Oval',
+                image_data=po1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Oval',
+                image_data=greyo1,
+                image_subsample=2,
+                button_color=('white', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+        ],
+        [
+            sg.Text(
+                'These square buttons are their original size. (image_subsample=1)'
+            )
+        ],
+        [
+            sg.Button(
+                'Sq',
+                image_data=bs1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=rs1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=gs1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=gs2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=os1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=ys1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=grays1,
+                button_color=('white', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=ps1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+        ],
+        [
+            sg.Button(
+                'Sq',
+                image_data=bs1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=rs1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=gs1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=gs2,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=os1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=ys1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=grays1,
+                image_subsample=2,
+                button_color=('white', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=ps1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+        ],
+        [
+            sg.Button(
+                'Sq',
+                image_data=bs1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=bs1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 12',
+            ),
+            sg.Button(
+                'Sq',
+                image_data=bs1,
+                image_subsample=3,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 10',
+            ),
+        ],
+        [
+            sg.Button(
+                'Circle',
+                image_data=bc1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Circle',
+                image_data=rc1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Circle',
+                image_data=gc1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Circle',
+                image_data=gc2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Circle',
+                image_data=oc1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Circle',
+                image_data=yc1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Circle',
+                image_data=pc1,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+            sg.Button(
+                'Circle',
+                image_data=grayc1,
+                button_color=('white', sg.theme_background_color()),
+                border_width=0,
+                font='Any 15',
+            ),
+        ],
+        [
+            sg.Button('Standard Button'),
+            sg.Button(
+                'Exit',
+                image_data=r1,
+                image_subsample=2,
+                button_color=('black', sg.theme_background_color()),
+                border_width=0,
+            ),
+        ],
+    ]
 
-                [
-                    sg.Button('Rect', image_data=r1,  button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Rect', image_data=g1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Rect', image_data=grey1, button_color=('white', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Rect', image_data=g2, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Rect', image_data=o1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Rect', image_data=y1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Rect', image_data=p1, image_subsample=3, button_color=('black', sg.theme_background_color()), border_width=0),
-                    ],
-                [sg.Text('These oval buttons are 1/2 of their original size. (image_subsample=2)')],
-                [
-                    sg.Button('Oval', image_data=bo1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Oval', image_data=ro1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Oval', image_data=go1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Oval', image_data=go2, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Oval', image_data=oo1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Oval', image_data=yo1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Oval', image_data=po1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Oval', image_data=greyo1, image_subsample=2, button_color=('white', sg.theme_background_color()), border_width=0, font='Any 15'),],
-                [sg.Text('These square buttons are their original size. (image_subsample=1)')],
-                [
-                    sg.Button('Sq', image_data=bs1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=rs1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=gs1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=gs2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=os1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=ys1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=grays1, button_color=('white', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=ps1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'), ],
-                [
-                    sg.Button('Sq', image_data=bs1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=rs1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=gs1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=gs2, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=os1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=ys1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=grays1, image_subsample=2, button_color=('white', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=ps1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'), ],
-                [
-                    sg.Button('Sq', image_data=bs1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Sq', image_data=bs1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 12'),
-                    sg.Button('Sq', image_data=bs1, image_subsample=3, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 10'),
-                ],
-                [
-                    sg.Button('Circle', image_data=bc1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Circle', image_data=rc1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Circle', image_data=gc1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Circle', image_data=gc2, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Circle', image_data=oc1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Circle', image_data=yc1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Circle', image_data=pc1, button_color=('black', sg.theme_background_color()), border_width=0, font='Any 15'),
-                    sg.Button('Circle', image_data=grayc1, button_color=('white', sg.theme_background_color()), border_width=0, font='Any 15'),
-
-                ],
-                [sg.Button(f'Standard Button'),
-                 sg.Button('Exit', image_data=r1, image_subsample=2, button_color=('black', sg.theme_background_color()), border_width=0),],
-
-                  ]
 
     window = sg.Window('Base64 Buttons', layout)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
     window.close()
 

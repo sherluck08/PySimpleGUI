@@ -31,9 +31,7 @@ def show_list_by_name(window, output_key, python_only):
     title_list = []
     for proc in process_list:
         names = convert_string_to_tuple(proc)
-        if python_only and names[0] == 'python.exe':
-            title_list.append(names[1])
-        elif not python_only:
+        if python_only and names[0] == 'python.exe' or not python_only:
             title_list.append(names[1])
     title_list.sort()
     window[output_key].update(title_list)

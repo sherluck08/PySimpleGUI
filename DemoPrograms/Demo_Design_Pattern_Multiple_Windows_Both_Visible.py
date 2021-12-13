@@ -36,12 +36,12 @@ def main():
 
     window2.move(window1.current_location()[0], window1.current_location()[1]+220)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         window, event, values = sg.read_all_windows()
 
         if window == sg.WIN_CLOSED:     # if all windows were closed
             break
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             window.close()
             if window == window2:       # if closing win 2, mark as closed
                 window2 = None

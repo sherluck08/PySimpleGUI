@@ -28,7 +28,7 @@ def calc_ladder():
     # read csv
     with open(filename, "r") as infile:
         reader = csv.reader(infile)
-        for i in range(1):
+        for _ in range(1):
             # get headings
             header = next(reader)
             # read everything else into a list of rows
@@ -59,9 +59,8 @@ swindow = sg.Window('Load File', location=(700, 250)).Layout(slayout)
 
 while True:
     button, value = swindow.Read()
-    if button is not None:
-        if button == 'Load File':
-            calc_ladder()
-    else:
+    if button is None:
         break
+    if button == 'Load File':
+        calc_ladder()
     

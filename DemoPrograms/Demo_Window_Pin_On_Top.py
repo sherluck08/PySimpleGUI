@@ -36,7 +36,7 @@ def main():
     while True:
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event == '-PIN-':
             window['-PIN-'].metadata = not window['-PIN-'].metadata     # use metadata to store current state of pin

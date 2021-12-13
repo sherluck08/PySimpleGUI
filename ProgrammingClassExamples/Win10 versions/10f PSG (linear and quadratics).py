@@ -39,7 +39,6 @@ def set_plot(a,b,c, function):
         if a == -1:
             a = '-'
         title = str('y = ') + str(a) + 'x + ' + str(b)
-        ax.set_title(title)
     else:
         y = a*x**2 + b*x + c
         #avoiding getting -1x or -1x**2 instead of -x for title
@@ -51,11 +50,11 @@ def set_plot(a,b,c, function):
             b = ''
         if b == -1:
             b = '-'
-        title = str('y = ') + str(a) + 'x**2 + ' + str(b) + 'x + ' + str(c) 
-        ax.set_title(title)
+        title = str('y = ') + str(a) + 'x**2 + ' + str(b) + 'x + ' + str(c)
+    ax.set_title(title)
     plt.plot(x,y)
 
-    
+
     #centre bottom and left axes to zero
 
     ax.spines['left'].set_position('zero')
@@ -74,18 +73,32 @@ set_plot(1,1,1, function)
 #column 1 for function type and constant values ...
 
 column1 = [
-           [sg.Text('Select constants & function type', )],
-           [sg.InputCombo(['y = ax + b', 'y = ax^2 + bx + c'], size = (16, 4), key = '_function_'),
-            sg.Text('Function', size = (10, 1))], [sg.Text('', size = (1, 2))],
-            [sg.Spin([sz for sz in range (-6,6)], initial_value =1, size = (3,2), key = '_a_'),
-                sg.Text('a', size = (3, 1)),
-           sg.Spin([sz for sz in range (-6,6)], initial_value =1, size = (3,2), key = '_b_'),
-                sg.Text('b', size = (3, 1)),
-           sg.Spin([sz for sz in range (-6,6)], initial_value =1, size = (3,2), key = '_c_'),
-                sg.Text('c', size = (3, 1))], [sg.Text('', size = (1, 1))],   
-               [sg.ReadButton('Redraw Plot', button_color = ('White', 'Red'))],
-               [sg.Text('', size = (1, 14))]]
-               
+    [
+        sg.Text(
+            'Select constants & function type',
+        )
+    ],
+    [
+        sg.InputCombo(
+            ['y = ax + b', 'y = ax^2 + bx + c'], size=(16, 4), key='_function_'
+        ),
+        sg.Text('Function', size=(10, 1)),
+    ],
+    [sg.Text('', size=(1, 2))],
+    [
+        sg.Spin(list(range(-6, 6)), initial_value=1, size=(3, 2), key='_a_'),
+        sg.Text('a', size=(3, 1)),
+        sg.Spin(list(range(-6, 6)), initial_value=1, size=(3, 2), key='_b_'),
+        sg.Text('b', size=(3, 1)),
+        sg.Spin(list(range(-6, 6)), initial_value=1, size=(3, 2), key='_c_'),
+        sg.Text('c', size=(3, 1)),
+    ],
+    [sg.Text('', size=(1, 1))],
+    [sg.ReadButton('Redraw Plot', button_color=('White', 'Red'))],
+    [sg.Text('', size=(1, 14))],
+]
+
+
 column2 = [[sg.Text('Plot Test - PySimpleGUI and Matplotlib and options')],
           [sg.Canvas(size = (figure_w, figure_h), key = '_canvas_')],
           [sg.OK(pad=((figure_w / 2, 0), 1), size=(4, 1), button_color = ('White', 'Red'))]]
@@ -104,7 +117,7 @@ while True:
         function = value['_function_']
         set_plot(a,b,c,function)
         fig_photo = draw_figure(window.FindElement('_canvas_').TKCanvas, fig)
-        
+
     if button is None:   
         break
 

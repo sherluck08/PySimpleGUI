@@ -23,22 +23,20 @@ close64 = 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEQ0lEQVR42r2XW2wbRRSG/
 
 def ExecuteCommandSubprocess(command, *args, wait=False):
     # try:
-        if sys.platform == 'linux':
-            arg_string = ''
-            for arg in args:
-                arg_string += ' ' + str(arg)
-            sp = subprocess.Popen(['python3' + arg_string, ], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        else:
-            expanded_args = []
-            for a in args:
-                expanded_args += a
-            sp = subprocess.Popen([command, expanded_args], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if wait:
-            out, err = sp.communicate()
-            if out:
-                print(out.decode("utf-8"))
-            if err:
-                print(err.decode("utf-8"))
+    if sys.platform == 'linux':
+        arg_string = ''.join(' ' + str(arg) for arg in args)
+        sp = subprocess.Popen(['python3' + arg_string, ], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else:
+        expanded_args = []
+        for a in args:
+            expanded_args += a
+        sp = subprocess.Popen([command, expanded_args], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if wait:
+        out, err = sp.communicate()
+        if out:
+            print(out.decode("utf-8"))
+        if err:
+            print(err.decode("utf-8"))
     # except: pass
 
 
@@ -47,8 +45,7 @@ def get_image_bytes(image64):
     img = Image.open(image_file)
     bio = io.BytesIO()
     img.save(bio, format='PNG')
-    imgbytes = bio.getvalue()
-    return imgbytes
+    return bio.getvalue()
 
 def ShowMeTheButtons():
 
@@ -70,10 +67,6 @@ def ShowMeTheButtons():
         print(button)
         if button == '_close_' or button is None:
             break       # exit button clicked
-        elif button == '_timer_':
-            pass        # add your call to launch a timer program
-        elif button == '_cpu_':
-            pass        # add your call to launch a CPU measuring utility
 if __name__ == '__main__':
     ShowMeTheButtons()
 

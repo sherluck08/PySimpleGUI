@@ -203,7 +203,7 @@ def main():
     while True:
         event, values = window.read()
         print(event, values)
-        if event == 'Exit' or event == sg.WIN_CLOSED:
+        if event in ['Exit', sg.WIN_CLOSED]:
             break
         if event == 'Draw' and values['-LB-']:
             # Get the function to call to make figure. Done this way to get around bug in Web port (default value not working correctly for listbox)

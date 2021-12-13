@@ -71,24 +71,24 @@ def main():
         window.size = (window.size[0], 1000)
     window.move(window.get_screen_size()[0]//2-window.size[0]//2, window.get_screen_size()[1]//2-500)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if isinstance(event, tuple):       # someone clicked a swatch
             chosen_color = event[1]
         else:
-            if event[0] == '#':  # someone right clicked
-                chosen_color = event
-            else:
-                chosen_color = ''
-
+            chosen_color = event if event[0] == '#' else ''
         if pyperclip_available:
             pyperclip.copy(chosen_color)
             sg.popup_auto_close(f'{chosen_color}\nColor copied to clipboard', auto_close_duration=1)
         else:
-            sg.popup_auto_close(f'pyperclip not installed\nPlease install pyperclip', auto_close_duration=3)
+            sg.popup_auto_close(
+                'pyperclip not installed\nPlease install pyperclip',
+                auto_close_duration=3,
+            )
+
 
     window.close()
 

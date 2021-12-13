@@ -32,7 +32,7 @@ window = sg.Window('Autosize Text', layout)
 while True:
     event, values = window.read()
     print(event, values)
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     if event == 'Go':
         window['-T-'].update('This is the new string\nThat is multiple\nlines')

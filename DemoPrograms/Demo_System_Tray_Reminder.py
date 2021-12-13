@@ -11,7 +11,7 @@ from time import time
     Should work with 3 of the PySimpleGUI ports - tkinter, WxPython, Qt
 """
 
-ONE_HOUR_IN_SECONDS = 60*60
+ONE_HOUR_IN_SECONDS = 60**2
 STARTING_FREQUENCY = ONE_HOUR_IN_SECONDS
 POPUP_FONT = 'Helvetica 16'       # font to use in popup
 POPUP_TEXT_COLOR, POPUP_BACKGROUND_COLOR = 'white', 'red'
@@ -32,8 +32,7 @@ def resize_base64_image(image64, size):
     img.thumbnail(size, Image.ANTIALIAS)
     bio = io.BytesIO()
     img.save(bio, format='PNG')
-    imgbytes = bio.getvalue()
-    return imgbytes
+    return bio.getvalue()
 
 
 def main():

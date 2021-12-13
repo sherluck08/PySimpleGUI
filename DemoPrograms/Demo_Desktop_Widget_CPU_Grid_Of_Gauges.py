@@ -256,21 +256,22 @@ class Gauge():
         call it with degree and step to set initial options for rotation.
         Without any option to start rotation.
         """
-        if self.pointer:
-            if degree != None:
-                self.pointer.stop_degree = degree
-                self.pointer.step = step if self.pointer.all[2] < degree else -step
-                return True
-            now = self.pointer.all[2]
-            step = self.pointer.step
-            new_degree = now + step
-            if ((step > 0 and new_degree < self.pointer.stop_degree) or
-                (step < 0 and new_degree > self.pointer.stop_degree)):
-                    self.pointer.new(degree=new_degree, color='red' if new_degree > 90 else None)
-                    return False
-            else:
-                self.pointer.new(degree=self.pointer.stop_degree, color='red' if self.pointer.stop_degree > 90 else None)
-                return True
+        if not self.pointer:
+            return
+        if degree != None:
+            self.pointer.stop_degree = degree
+            self.pointer.step = step if self.pointer.all[2] < degree else -step
+            return True
+        now = self.pointer.all[2]
+        step = self.pointer.step
+        new_degree = now + step
+        if ((step > 0 and new_degree < self.pointer.stop_degree) or
+            (step < 0 and new_degree > self.pointer.stop_degree)):
+                self.pointer.new(degree=new_degree, color='red' if new_degree > 90 else None)
+                return False
+        else:
+            self.pointer.new(degree=self.pointer.stop_degree, color='red' if self.pointer.stop_degree > 90 else None)
+            return True
 
 
 

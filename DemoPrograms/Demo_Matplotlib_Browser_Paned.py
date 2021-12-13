@@ -30,8 +30,7 @@ def PyplotSimple():
     # red dashes, blue squares and green triangles
     plt.plot(t, t, 'r--', t, t ** 2, 'bs', t, t ** 3, 'g^')
 
-    fig = plt.gcf()  # get the figure to show
-    return fig
+    return plt.gcf()
 
 
 def PyplotHistogram():
@@ -193,8 +192,8 @@ def PyplotScatterWithLegend():
     from numpy.random import rand
 
     fig, ax = plt.subplots()
+    n = 750
     for color in ['red', 'green', 'blue']:
-        n = 750
         x, y = rand(2, n)
         scale = 200.0 * rand(n)
         ax.scatter(x, y, c=color, s=scale, label=color,
@@ -346,7 +345,7 @@ def PyplotLinePolyCollection():
     ym = np.max(yy)
     xx = (0.2 + (ym - yy) / ym) ** 2 * np.cos(yy - 0.4) * 0.5
     segs = []
-    for i in range(ncurves):
+    for _ in range(ncurves):
         xxx = xx + 0.02 * rs.randn(nverts)
         curve = np.column_stack([xxx, yy * 100])
         segs.append(curve)
@@ -399,7 +398,7 @@ def PyplotGGPlotSytleSheet():
     ax3.set_xticklabels(['a', 'b', 'c', 'd', 'e'])
 
     # circles with colors from default color cycle
-    for i, color in enumerate(plt.rcParams['axes.prop_cycle']):
+    for color in plt.rcParams['axes.prop_cycle']:
         xy = np.random.normal(size=2)
         ax4.add_patch(plt.Circle(xy, radius=0.3, color=color['color']))
     ax4.axis('equal')
@@ -529,30 +528,10 @@ def PyplotRadarChart():
         This polygon is circumscribed by a unit circle centered at (0.5, 0.5)
         """
         x0, y0, r = [0.5] * 3
-        verts = [(r * np.cos(t) + x0, r * np.sin(t) + y0) for t in theta]
-        return verts
+        return [(r * np.cos(t) + x0, r * np.sin(t) + y0) for t in theta]
 
     def example_data():
-        # The following data is from the Denver Aerosol Sources and Health study.
-        # See  doi:10.1016/j.atmosenv.2008.12.017
-        #
-        # The data are pollution source profile estimates for five modeled
-        # pollution sources (e.g., cars, wood-burning, etc) that emit 7-9 chemical
-        # species. The radar charts are experimented with here to see if we can
-        # nicely visualize how the modeled source profiles change across four
-        # scenarios:
-        #  1) No gas-phase species present, just seven particulate counts on
-        #     Sulfate
-        #     Nitrate
-        #     Elemental Carbon (EC)
-        #     Organic Carbon fraction 1 (OC)
-        #     Organic Carbon fraction 2 (OC2)
-        #     Organic Carbon fraction 3 (OC3)
-        #     Pyrolized Organic Carbon (OP)
-        #  2)Inclusion of gas-phase specie carbon monoxide (CO)
-        #  3)Inclusion of gas-phase specie ozone (O3).
-        #  4)Inclusion of both gas-phase species is present...
-        data = [
+        return [
             ['Sulfate', 'Nitrate', 'EC', 'OC1', 'OC2', 'OC3', 'OP', 'CO', 'O3'],
             ('Basecase', [
                 [0.88, 0.01, 0.03, 0.03, 0.00, 0.06, 0.01, 0.00, 0.00],
@@ -579,7 +558,6 @@ def PyplotRadarChart():
                 [0.01, 0.03, 0.00, 0.28, 0.24, 0.23, 0.00, 0.44, 0.88],
                 [0.02, 0.00, 0.18, 0.45, 0.64, 0.55, 0.86, 0.00, 0.16]])
         ]
-        return data
 
     N = 9
     theta = radar_factory(N, frame='polygon')

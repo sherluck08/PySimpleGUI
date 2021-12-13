@@ -10,10 +10,7 @@ LOCATION_OF_YOUR_SCRIPTS = ''
 
 
 def execute_command_blocking(command, *args):
-    expanded_args = []
-    for a in args:
-        expanded_args.append(a)
-        # expanded_args += a
+    expanded_args = list(args)
     try:
         sp = subprocess.Popen([command, expanded_args], shell=True,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -44,10 +41,7 @@ def Launcher2():
     sg.theme('GreenTan')
 
     filelist = glob.glob(LOCATION_OF_YOUR_SCRIPTS+'*.py')
-    namesonly = []
-    for file in filelist:
-        namesonly.append(ntpath.basename(file))
-
+    namesonly = [ntpath.basename(file) for file in filelist]
     layout = [
         [sg.Listbox(values=namesonly, size=(30, 19),
                     select_mode=sg.SELECT_MODE_EXTENDED, key='demolist'),
@@ -70,7 +64,7 @@ def Launcher2():
                 Or anything else you type on the command line''')
             # copyfile(source, dest)
         elif event == 'Run':
-            for index, file in enumerate(values['demolist']):
+            for file in values['demolist']:
                 print('Launching %s' % file)
                 window.refresh()          # make the print appear immediately
                 if values['wait']:

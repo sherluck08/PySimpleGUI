@@ -324,9 +324,7 @@ def running_trinket():
     :return: True if sys.platform indicates Linux and the number of environment variables is 1
     :rtype:  (bool)
     """
-    if len(os.environ) == 1 and sys.platform.startswith('linux'):
-        return True
-    return False
+    return bool(len(os.environ) == 1 and sys.platform.startswith('linux'))
 
 
 def running_replit():
@@ -339,9 +337,7 @@ def running_replit():
     :return: True if sys.platform indicates Linux and setting REPL_OWNER is found in the environment variables
     :rtype:  (bool)
     """
-    if 'REPL_OWNER' in os.environ and sys.platform.startswith('linux'):
-        return True
-    return False
+    return bool('REPL_OWNER' in os.environ and sys.platform.startswith('linux'))
 
 
 
@@ -375,6 +371,7 @@ def running_replit():
 
     I truly hope you get a lot of enjoyment out of using PySimpleGUI.  It came from good intentions.
 """
+
 
 # ----====----====----==== Constants the user CAN safely change ====----====----====----#
 
@@ -607,15 +604,14 @@ SYMBOL_RIGHT_ARROWHEAD = '⮞'
 SYMBOL_UP_ARROWHEAD = '⮝'
 SYMBOL_DOWN_ARROWHEAD = '⮟'
 
-if sum([int(i) for i in tclversion_detailed.split('.')]) > 19:
-    SYMBOL_TITLEBAR_MINIMIZE = '_'
+if sum(int(i) for i in tclversion_detailed.split('.')) > 19:
     SYMBOL_TITLEBAR_MAXIMIZE = '◻'
     SYMBOL_TITLEBAR_CLOSE = 'Ｘ'
 else:
-    SYMBOL_TITLEBAR_MINIMIZE = '_'
     SYMBOL_TITLEBAR_MAXIMIZE = 'O'
     SYMBOL_TITLEBAR_CLOSE = 'X'
 
+SYMBOL_TITLEBAR_MINIMIZE = '_'
 #################### PATHS for user_settings APIs ####################
 # These paths are passed to os.path.expanduser to get the default path for user_settings
 # They can be changed using set_options
@@ -869,9 +865,8 @@ class Element():
             if isinstance(size, tuple) and len(size) == 1:
                 size = (size[0],  1)
 
-        if pad is not None and pad != (None, None):
-            if isinstance(pad, int):
-                pad = (pad, pad)
+        if pad is not None and pad != (None, None) and isinstance(pad, int):
+            pad = (pad, pad)
 
 
         self.Size = size
@@ -1004,9 +999,8 @@ class Element():
         """
         for row in form.Rows:
             for element in row:
-                if element.Type == ELEM_TYPE_BUTTON:
-                    if element.BindReturnKey:
-                        return element
+                if element.Type == ELEM_TYPE_BUTTON and element.BindReturnKey:
+                    return element
                 if element.Type == ELEM_TYPE_COLUMN:
                     rc = self._FindReturnKeyBoundButton(element)
                     if rc is not None:
@@ -1189,15 +1183,14 @@ class Element():
         self.user_bind_event = event
         if self.Type == ELEM_TYPE_GRAPH:
             self._update_position_for_returned_values(event)
-        if self.Key is not None:
-            if isinstance(self.Key, str):
-                key = self.Key + str(key_suffix)
-            else:
-                key = (self.Key, key_suffix)  # old way (pre 2021) was to make a brand new tuple
-                # key = self.Key + (key_suffix,)   # in 2021 tried this. It will break existing applications though - if key is a tuple, add one more item
-        else:
+        if self.Key is None:
             key = bind_string
 
+        elif isinstance(self.Key, str):
+            key = self.Key + str(key_suffix)
+        else:
+            key = (self.Key, key_suffix)  # old way (pre 2021) was to make a brand new tuple
+            # key = self.Key + (key_suffix,)   # in 2021 tried this. It will break existing applications though - if key is a tuple, add one more item
         self._generic_callback_handler(force_key_to_be=key)
 
     def bind(self, bind_string, key_modifier):
@@ -1415,17 +1408,16 @@ class Element():
         """
         if self.Widget is not None:
             return True
-        else:
-            warnings.warn('You cannot Update element with key = {} until the window.read() is called or finalized=True when creating window'.format(self.Key),
-                          UserWarning)
-            if not SUPPRESS_ERROR_POPUPS:
-                _error_popup_with_traceback('Unable to complete operation on element with key {}'.format(self.Key),
-                                            'You cannot perform operations (such as calling update) on an Element until:',
-                                            ' window.read() is called or finalize=True when Window created.',
-                                            'Adding a "finalize=True" parameter to your Window creation will likely fix this.',
-                                            _create_error_message(),
-                                            )
-            return False
+        warnings.warn('You cannot Update element with key = {} until the window.read() is called or finalized=True when creating window'.format(self.Key),
+                      UserWarning)
+        if not SUPPRESS_ERROR_POPUPS:
+            _error_popup_with_traceback('Unable to complete operation on element with key {}'.format(self.Key),
+                                        'You cannot perform operations (such as calling update) on an Element until:',
+                                        ' window.read() is called or finalize=True when Window created.',
+                                        'Adding a "finalize=True" parameter to your Window creation will likely fix this.',
+                                        _create_error_message(),
+                                        )
+        return False
 
 
     def _grab_anywhere_on_using_control_key(self):
@@ -1477,8 +1469,8 @@ class Element():
             return
         if menu is None:
             menu = self.ParentForm.RightClickMenu
-            if menu is None:
-                return
+        if menu is None:
+            return
         if menu:
             top_menu = tk.Menu(self.ParentForm.TKroot, tearoff=self.ParentForm.right_click_menu_tearoff, tearoffcommand=self._tearoff_menu_callback)
 
@@ -1497,13 +1489,15 @@ class Element():
                 top_menu.config(activebackground=self.ParentForm.right_click_menu_selected_colors[1])
             AddMenuItem(top_menu, menu[1], self, right_click_menu=True)
             self.TKRightClickMenu = top_menu
-            if self.ParentForm.RightClickMenu:            # if the top level has a right click menu, then setup a callback for the Window itself
-                if self.ParentForm.TKRightClickMenu is None:
-                    self.ParentForm.TKRightClickMenu = top_menu
-                    if (running_mac()):
-                        self.ParentForm.TKroot.bind('<ButtonRelease-2>', self.ParentForm._RightClickMenuCallback)
-                    else:
-                        self.ParentForm.TKroot.bind('<ButtonRelease-3>', self.ParentForm._RightClickMenuCallback)
+            if (
+                self.ParentForm.RightClickMenu
+                and self.ParentForm.TKRightClickMenu is None
+            ):
+                self.ParentForm.TKRightClickMenu = top_menu
+                if (running_mac()):
+                    self.ParentForm.TKroot.bind('<ButtonRelease-2>', self.ParentForm._RightClickMenuCallback)
+                else:
+                    self.ParentForm.TKroot.bind('<ButtonRelease-3>', self.ParentForm._RightClickMenuCallback)
             if (running_mac()):
                 self.Widget.bind('<ButtonRelease-2>', self._RightClickMenuCallback)
             else:
@@ -1786,7 +1780,7 @@ class Combo(Element):
         self.Disabled = disabled
         self.Readonly = readonly
         self.BindReturnKey = bind_return_key
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         key = key if key is not None else k
         sz = size if size != (None, None) else s
@@ -1838,12 +1832,9 @@ class Combo(Element):
             if value is None:
                 self.TKCombo.set('')
             if size == (None, None):
-                max_line_len = max([len(str(l)) for l in self.Values]) if len(self.Values) else 0
-                if self.AutoSizeText is False:
-                    width = self.Size[0]
-                else:
-                    width = max_line_len + 1
-                # self.TKCombo.configure(width=width)
+                max_line_len = max(len(str(l)) for l in self.Values) if len(self.Values) else 0
+                width = self.Size[0] if self.AutoSizeText is False else max_line_len + 1
+                        # self.TKCombo.configure(width=width)
             else:
                 self.TKCombo.configure(height=size[1])
                 self.TKCombo.configure(width=size[0])
@@ -1969,7 +1960,7 @@ class OptionMenu(Element):
         self.DefaultValue = default_value
         self.Widget = self.TKOptionMenu = None  # type: tk.OptionMenu
         self.Disabled = disabled
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         key = key if key is not None else k
         sz = size if size != (None, None) else s
@@ -2009,11 +2000,8 @@ class OptionMenu(Element):
                 self.TKStringVar.set('')
 
             if size == (None, None):
-                max_line_len = max([len(str(l)) for l in self.Values]) if len(self.Values) else 0
-                if self.AutoSizeText is False:
-                    width = self.Size[0]
-                else:
-                    width = max_line_len + 1
+                max_line_len = max(len(str(l)) for l in self.Values) if len(self.Values) else 0
+                width = self.Size[0] if self.AutoSizeText is False else max_line_len + 1
                 self.TKOptionMenu.configure(width=width)
             else:
                 self.TKOptionMenu.configure(width=size[0])
@@ -2337,14 +2325,14 @@ class Radio(Element):
         self.GroupID = group_id
         self.Value = None
         self.Disabled = disabled
-        self.TextColor = text_color if text_color else theme_text_color()
+        self.TextColor = text_color or theme_text_color()
         self.RightClickMenu = right_click_menu
 
         if circle_color is None:
             # ---- compute color of circle background ---
             try:  # something in here will fail if a color is not specified in Hex
                 text_hsl = _hex_to_hsl(self.TextColor)
-                background_hsl = _hex_to_hsl(background_color if background_color else theme_background_color())
+                background_hsl = _hex_to_hsl(background_color or theme_background_color())
                 l_delta = abs(text_hsl[2] - background_hsl[2]) / 10
                 if text_hsl[2] > background_hsl[2]:  # if the text is "lighter" than the background then make background darker
                     bg_rbg = _hsl_to_rgb(background_hsl[0], background_hsl[1], background_hsl[2] - l_delta)
@@ -2352,7 +2340,7 @@ class Radio(Element):
                     bg_rbg = _hsl_to_rgb(background_hsl[0], background_hsl[1], background_hsl[2] + l_delta)
                 self.CircleBackgroundColor = rgb(*bg_rbg)
             except:
-                self.CircleBackgroundColor = background_color if background_color else theme_background_color()
+                self.CircleBackgroundColor = background_color or theme_background_color()
         else:
             self.CircleBackgroundColor = circle_color
         self.ChangeSubmits = change_submits or enable_events
@@ -2417,7 +2405,7 @@ class Radio(Element):
                     '#') and self.BackgroundColor.startswith('#'):
                 # ---- compute color of circle background ---
                 text_hsl = _hex_to_hsl(self.TextColor)
-                background_hsl = _hex_to_hsl(self.BackgroundColor if self.BackgroundColor else theme_background_color())
+                background_hsl = _hex_to_hsl(self.BackgroundColor or theme_background_color())
                 l_delta = abs(text_hsl[2] - background_hsl[2]) / 10
                 if text_hsl[2] > background_hsl[2]:  # if the text is "lighter" than the background then make background darker
                     bg_rbg = _hsl_to_rgb(background_hsl[0], background_hsl[1], background_hsl[2] - l_delta)
@@ -2526,14 +2514,14 @@ class Checkbox(Element):
         self.Value = None
         self.TKCheckbutton = self.Widget = None  # type: tk.Checkbutton
         self.Disabled = disabled
-        self.TextColor = text_color if text_color else theme_text_color()
+        self.TextColor = text_color or theme_text_color()
         self.RightClickMenu = right_click_menu
 
         # ---- compute color of circle background ---
         if checkbox_color is None:
             try:  # something in here will fail if a color is not specified in Hex
                 text_hsl = _hex_to_hsl(self.TextColor)
-                background_hsl = _hex_to_hsl(background_color if background_color else theme_background_color())
+                background_hsl = _hex_to_hsl(background_color or theme_background_color())
                 l_delta = abs(text_hsl[2] - background_hsl[2]) / 10
                 if text_hsl[2] > background_hsl[2]:  # if the text is "lighter" than the background then make background darker
                     bg_rbg = _hsl_to_rgb(background_hsl[0], background_hsl[1], background_hsl[2] - l_delta)
@@ -2541,7 +2529,7 @@ class Checkbox(Element):
                     bg_rbg = _hsl_to_rgb(background_hsl[0], background_hsl[1], background_hsl[2] + l_delta)
                 self.CheckboxBackgroundColor = rgb(*bg_rbg)
             except:
-                self.CheckboxBackgroundColor = background_color if background_color else theme_background_color()
+                self.CheckboxBackgroundColor = background_color or theme_background_color()
         else:
             self.CheckboxBackgroundColor = checkbox_color
         self.ChangeSubmits = change_submits or enable_events
@@ -2615,7 +2603,7 @@ class Checkbox(Element):
                     '#') and self.BackgroundColor.startswith('#'):
                 # ---- compute color of checkbox background ---
                 text_hsl = _hex_to_hsl(self.TextColor)
-                background_hsl = _hex_to_hsl(self.BackgroundColor if self.BackgroundColor else theme_background_color())
+                background_hsl = _hex_to_hsl(self.BackgroundColor or theme_background_color())
                 l_delta = abs(text_hsl[2] - background_hsl[2]) / 10
                 if text_hsl[2] > background_hsl[2]:  # if the text is "lighter" than the background then make background darker
                     bg_rbg = _hsl_to_rgb(background_hsl[0], background_hsl[1], background_hsl[2] - l_delta)
@@ -2709,7 +2697,7 @@ class Spin(Element):
         self.Readonly = readonly
         self.RightClickMenu = right_click_menu
 
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         key = key if key is not None else k
         sz = size if size != (None, None) else s
@@ -2764,11 +2752,7 @@ class Spin(Element):
         if disabled is True:
             self.TKSpinBox['state'] = 'disable'
         elif disabled is False:
-            if self.Readonly:
-                self.TKSpinBox['state'] = 'readonly'
-            else:
-                self.TKSpinBox['state'] = 'normal'
-
+            self.TKSpinBox['state'] = 'readonly' if self.Readonly else 'normal'
         if visible is False:
             self.TKSpinBox.pack_forget()
         elif visible is True:
@@ -2784,10 +2768,7 @@ class Spin(Element):
         :type event:
         """
         # first, get the results table built
-        if self.Key is not None:
-            self.ParentForm.LastButtonClicked = self.Key
-        else:
-            self.ParentForm.LastButtonClicked = ''
+        self.ParentForm.LastButtonClicked = self.Key if self.Key is not None else ''
         self.ParentForm.FormRemainedOpen = True
         _exit_mainloop(self.ParentForm)
         # if self.ParentForm.CurrentlyRunningMainloop:
@@ -2903,7 +2884,7 @@ class Multiline(Element):
 
         self.DefaultText = str(default_text)
         self.EnterSubmits = enter_submits
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         self.Focus = focus
         self.do_not_clear = do_not_clear
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
@@ -3262,7 +3243,7 @@ class Text(Element):
         """
 
         self.DisplayText = str(text)
-        self.TextColor = text_color if text_color else DEFAULT_TEXT_COLOR
+        self.TextColor = text_color or DEFAULT_TEXT_COLOR
         self.Justification = justification
         self.Relief = relief
         self.ClickSubmits = click_submits or enable_events
@@ -3280,8 +3261,19 @@ class Text(Element):
         self.expand_x = expand_x
         self.expand_y = expand_y
 
-        super().__init__(ELEM_TYPE_TEXT, auto_size_text=auto_size_text, size=sz, background_color=bg, font=font if font else DEFAULT_FONT,
-                         text_color=self.TextColor, pad=pad, key=key, tooltip=tooltip, visible=visible, metadata=metadata)
+        super().__init__(
+            ELEM_TYPE_TEXT,
+            auto_size_text=auto_size_text,
+            size=sz,
+            background_color=bg,
+            font=font or DEFAULT_FONT,
+            text_color=self.TextColor,
+            pad=pad,
+            key=key,
+            tooltip=tooltip,
+            visible=visible,
+            metadata=metadata,
+        )
 
     def update(self, value=None, background_color=None, text_color=None, font=None, visible=None):
         """
@@ -3457,7 +3449,7 @@ class StatusBar(Element):
 
 
         self.DisplayText = text
-        self.TextColor = text_color if text_color else DEFAULT_TEXT_COLOR
+        self.TextColor = text_color or DEFAULT_TEXT_COLOR
         self.Justification = justification
         self.Relief = relief
         self.ClickSubmits = click_submits or enable_events
@@ -3772,7 +3764,7 @@ class Output(Element):
         """
 
         self._TKOut = self.Widget = None  # type: TKOutput
-        bg = background_color if background_color else DEFAULT_INPUT_ELEMENTS_COLOR
+        bg = background_color or DEFAULT_INPUT_ELEMENTS_COLOR
         fg = text_color if text_color is not None else DEFAULT_INPUT_TEXT_COLOR
         self.RightClickMenu = right_click_menu
         key = key if key is not None else k
@@ -4282,7 +4274,7 @@ class Button(Element):
         if text is not None:
             self.TKButton.configure(text=text)
             self.ButtonText = text
-        if button_color != (None, None) and button_color != COLOR_SYSTEM_DEFAULT:
+        if button_color not in [(None, None), COLOR_SYSTEM_DEFAULT]:
             bc = button_color_to_tuple(button_color, self.ButtonColor)
             # if isinstance(button_color, str):
             #     try:
@@ -4339,7 +4331,7 @@ class Button(Element):
             self.TKButton.pack_forget()
         elif visible is True:
             self.TKButton.pack(padx=self.pad_used[0], pady=self.pad_used[1])
-        if disabled_button_color != (None, None) and disabled_button_color != COLOR_SYSTEM_DEFAULT:
+        if disabled_button_color not in [(None, None), COLOR_SYSTEM_DEFAULT]:
             if not self.UseTtkButtons:
                 self.TKButton['disabledforeground'] = disabled_button_color[0]
             else:

@@ -22,7 +22,7 @@ window = sg.Window('PyCharm Launch Demo', layout)
 
 while True:             # Event Loop
     event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     if event == 'PyCharm Me':
         subprocess.Popen([PYCHARM, __file__], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

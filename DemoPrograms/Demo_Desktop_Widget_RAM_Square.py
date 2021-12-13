@@ -43,7 +43,7 @@ def main(location):
         text_id2 = graph.draw_text(f'{human_size(ram.used)} used', (GSIZE[0] // 2, GSIZE[1] // 4), font='Any 20', text_location=sg.TEXT_LOCATION_CENTER, color=sg.theme_button_color()[0])
 
         event, values = window.read(timeout=UPDATE_FREQUENCY_MILLISECONDS)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         elif event == 'Edit Me':
             sg.execute_editor(__file__)

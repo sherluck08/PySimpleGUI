@@ -48,7 +48,7 @@ def main():
 
     while True:
         event, values = window.read(timeout=200)
-        if event == 'Quit' or event == sg.WIN_CLOSED:
+        if event in ['Quit', sg.WIN_CLOSED]:
             break
         if g_response_time is None or prev_response_time == g_response_time:
             continue
@@ -56,7 +56,7 @@ def main():
         prev_response_time = g_response_time
         if i >= SAMPLES:
             graph.move(-STEP_SIZE, 0)
-            prev_x = prev_x - STEP_SIZE
+            prev_x -= STEP_SIZE
         graph.draw_line((prev_x, prev_y), (new_x, new_y), color='white')
         # window['graph'].draw_point((new_x, new_y), color='red')
         prev_x, prev_y = new_x, new_y

@@ -26,25 +26,63 @@ def make_window(theme):
     data = [["John", 10], ["Jen", 5]]
     headings = ["Name", "Score"]
 
-    input_layout =  [[sg.Menu(menu_def, key='-MENU-')],
-                [sg.Text('Anything that requires user-input is in this tab!')], 
-                [sg.Input(key='-INPUT-')],
-                [sg.Slider(orientation='h', key='-SKIDER-'),
-                 sg.Image(data=sg.DEFAULT_BASE64_LOADING_GIF, enable_events=True, key='-GIF-IMAGE-'),],
-                [sg.Checkbox('Checkbox', default=True, k='-CB-')],
-                [sg.Radio('Radio1', "RadioDemo", default=True, size=(10,1), k='-R1-'), sg.Radio('Radio2', "RadioDemo", default=True, size=(10,1), k='-R2-')],
-                [sg.Combo(values=('Combo 1', 'Combo 2', 'Combo 3'), default_value='Combo 1', readonly=True, k='-COMBO-'),
-                 sg.OptionMenu(values=('Option 1', 'Option 2', 'Option 3'),  k='-OPTION MENU-'),],
-                [sg.Spin([i for i in range(1,11)], initial_value=10, k='-SPIN-'), sg.Text('Spin')],
-                [sg.Multiline('Demo of a Multi-Line Text Element!\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nYou get the point.', size=(45,5), k='-MLINE-')],
-                [sg.Button('Button'), sg.Button('Popup'), sg.Button(image_data=sg.DEFAULT_BASE64_ICON, key='-LOGO-')]]
+    input_layout = [
+        [sg.Menu(menu_def, key='-MENU-')],
+        [sg.Text('Anything that requires user-input is in this tab!')],
+        [sg.Input(key='-INPUT-')],
+        [
+            sg.Slider(orientation='h', key='-SKIDER-'),
+            sg.Image(
+                data=sg.DEFAULT_BASE64_LOADING_GIF,
+                enable_events=True,
+                key='-GIF-IMAGE-',
+            ),
+        ],
+        [sg.Checkbox('Checkbox', default=True, k='-CB-')],
+        [
+            sg.Radio(
+                'Radio1', "RadioDemo", default=True, size=(10, 1), k='-R1-'
+            ),
+            sg.Radio(
+                'Radio2', "RadioDemo", default=True, size=(10, 1), k='-R2-'
+            ),
+        ],
+        [
+            sg.Combo(
+                values=('Combo 1', 'Combo 2', 'Combo 3'),
+                default_value='Combo 1',
+                readonly=True,
+                k='-COMBO-',
+            ),
+            sg.OptionMenu(
+                values=('Option 1', 'Option 2', 'Option 3'), k='-OPTION MENU-'
+            ),
+        ],
+        [
+            sg.Spin(list(range(1, 11)), initial_value=10, k='-SPIN-'),
+            sg.Text('Spin'),
+        ],
+        [
+            sg.Multiline(
+                'Demo of a Multi-Line Text Element!\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nYou get the point.',
+                size=(45, 5),
+                k='-MLINE-',
+            )
+        ],
+        [
+            sg.Button('Button'),
+            sg.Button('Popup'),
+            sg.Button(image_data=sg.DEFAULT_BASE64_ICON, key='-LOGO-'),
+        ],
+    ]
+
 
     asthetic_layout = [[sg.T('Anything that you would use for asthetics is in this tab!')],
                [sg.Image(data=sg.DEFAULT_BASE64_ICON,  k='-IMAGE-')],
                [sg.ProgressBar(1000, orientation='h', size=(20, 20), key='-PROGRESS BAR-'), sg.Button('Test Progress bar')]]
 
     logging_layout = [[sg.Text("Anything printed will display here!")], [sg.Output(size=(60,15), font='Courier 8')]]
-    
+
     graphing_layout = [[sg.Text("Anything you would use to graph will display here!")],
                       [sg.Graph((200,200), (0,0),(200,200),background_color="black", key='-GRAPH-', enable_events=True)],
                       [sg.T('Click anywhere on graph to draw a circle')],
@@ -61,14 +99,14 @@ def make_window(theme):
     specalty_layout = [[sg.Text("Any \"special\" elements will display here!")],
                       [sg.Button("Open Folder")],
                       [sg.Button("Open File")]]
-    
+
     theme_layout = [[sg.Text("See how elements look under different themes by choosing a different theme here!")],
                     [sg.Listbox(values = sg.theme_list(), 
                       size =(20, 12), 
                       key ='-THEME LISTBOX-',
                       enable_events = True)],
                       [sg.Button("Set Theme")]]
-    
+
     layout = [[sg.Text('Demo Of (Almost) All Elements', size=(38, 1), justification='center', font=("Helvetica", 16), relief=sg.RELIEF_RIDGE, k='-TEXT HEADING-', enable_events=True)]]
     layout +=[[sg.TabGroup([[  sg.Tab('Input Elements', input_layout),
                                sg.Tab('Asthetic Elements', asthetic_layout),
@@ -76,7 +114,7 @@ def make_window(theme):
                                sg.Tab('Specialty', specalty_layout),
                                sg.Tab('Theming', theme_layout),
                                sg.Tab('Output', logging_layout)]], key='-TAB GROUP-')]]
-              
+
     return sg.Window('All Elements Demo', layout, right_click_menu=right_click_menu_def)
 
 

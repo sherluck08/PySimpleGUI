@@ -29,8 +29,7 @@ def resize_base64_image(image64, size):
     img.thumbnail(size, Image.ANTIALIAS)
     bio = io.BytesIO()
     img.save(bio, format='PNG')
-    imgbytes = bio.getvalue()
-    return imgbytes
+    return bio.getvalue()
 
 
 def GraphicButton(text, key, image_data, color=DEF_BUTTON_COLOR, size=(100, 50)):

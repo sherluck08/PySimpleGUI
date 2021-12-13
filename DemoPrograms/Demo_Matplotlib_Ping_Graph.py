@@ -223,13 +223,7 @@ import os, sys, socket, struct, select, time, signal
 
 __description__ = 'A pure python ICMP ping implementation using raw sockets.'
 
-if sys.platform == "win32":
-    # On Windows, the best timer is time.clock()
-    default_timer = time.clock
-else:
-    # On most other platforms the best timer is time.time()
-    default_timer = time.time
-
+default_timer = time.clock if sys.platform == "win32" else time.time
 NUM_PACKETS = 3
 PACKET_SIZE = 64
 WAIT_TIMEOUT = 3.0
@@ -281,9 +275,9 @@ def checksum(source_string):
             loByte = source_string[count + 1]
             hiByte = source_string[count]
         try:  # For Python3
-            sum = sum + (hiByte * 256 + loByte)
+            sum += hiByte * 256 + loByte
         except:  # For Python2
-            sum = sum + (ord(hiByte) * 256 + ord(loByte))
+            sum += ord(hiByte) * 256 + ord(loByte)
         count += 2
 
     # Handle last byte if applicable (odd-number of bytes)
@@ -322,7 +316,7 @@ def do_one(myStats, destIP, hostname, timeout, mySeqNumber, packet_size, quiet=F
     my_ID = os.getpid() & 0xFFFF
 
     sentTime = send_one_ping(mySocket, destIP, my_ID, mySeqNumber, packet_size)
-    if sentTime == None:
+    if sentTime is None:
         mySocket.close()
         return delay
 
@@ -368,7 +362,6 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, packet_size):
     )
 
     padBytes = []
-    startVal = 0x42
     # 'cose of the string/byte changes in python 2/3 we have
     # to build the data differnely for different version
     # or it will make packets with unexpected size.
@@ -377,6 +370,7 @@ def send_one_ping(mySocket, destIP, myID, mySeqNumber, packet_size):
         data = ((packet_size - 8) - bytes) * "Q"
         data = struct.pack("d", default_timer()) + data
     else:
+        startVal = 0x42
         for i in range(startVal, startVal + (packet_size - 8)):
             padBytes += [(i & 0xff)]  # Keep chars in the 0-255 range
         # data = bytes(padBytes)
@@ -492,8 +486,6 @@ def verbose_ping(hostname, timeout=WAIT_TIMEOUT, count=NUM_PACKETS,
 
     myStats = MyStats()  # Reset the stats
 
-    mySeqNumber = 0  # Starting value
-
     try:
         destIP = socket.gethostbyname(hostname)
         print("\nPYTHON PING %s (%s): %d data bytes" % (hostname, destIP, packet_size))
@@ -504,13 +496,11 @@ def verbose_ping(hostname, timeout=WAIT_TIMEOUT, count=NUM_PACKETS,
 
     myStats.thisIP = destIP
 
-    for i in range(count):
+    for mySeqNumber, _ in enumerate(range(count)):
         delay = do_one(myStats, destIP, hostname, timeout, mySeqNumber, packet_size)
 
-        if delay == None:
+        if delay is None:
             delay = 0
-
-        mySeqNumber += 1
 
         # Pause for the remainder of the MAX_SLEEP period (if applicable)
         if (MAX_SLEEP > delay):
@@ -543,11 +533,11 @@ def quiet_ping(hostname, timeout=WAIT_TIMEOUT, count=NUM_PACKETS,
                         mySeqNumber, packet_size, quiet=True)
         time.sleep(0.5)
 
-    for i in range(count):
+    for _ in range(count):
         delay = do_one(myStats, destIP, hostname, timeout,
                         mySeqNumber, packet_size, quiet=True)
 
-        if delay == None:
+        if delay is None:
             delay = 0
 
         mySeqNumber += 1
@@ -590,10 +580,7 @@ def run_a_ping_and_graph():
 
     #===================== Do the ping =====================#
     response = quiet_ping('google.com',timeout=1000)
-    if response[0] == 0:
-        ping_time = 1000
-    else:
-        ping_time = response[0]
+    ping_time = 1000 if response[0] == 0 else response[0]
     #===================== Store current ping in historical array =====================#
     g_my_globals.ping_x_array.append(len(g_my_globals.ping_x_array))
     g_my_globals.ping_y_array.append(ping_time)

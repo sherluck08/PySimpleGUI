@@ -41,8 +41,8 @@ class GameOfLife:
         self.T = T  # The maximum number of generations
 
         # Set up a random initial configuration for the grid.
-        for i in range(0, self.N):
-            for j in range(0, self.N):
+        for i in range(self.N):
+            for j in range(self.N):
                 self.old_grid[i][j] = 0
         self.init_graphics()
         self.manual_board_setup()
@@ -57,11 +57,9 @@ class GameOfLife:
                     continue  # Skip the current point itself - we only want to count the neighbours!
                 if (x != self.N and y != self.N):
                     s += self.old_grid[x][y]
-                # The remaining branches handle the case where the neighbour is off the end of the grid.
-                # In this case, we loop back round such that the grid becomes a "toroidal array".
                 elif (x == self.N and y != self.N):
                     s += self.old_grid[0][y]
-                elif (x != self.N and y == self.N):
+                elif x != self.N:
                     s += self.old_grid[x][0]
                 else:
                     s += self.old_grid[0][0]
@@ -82,7 +80,7 @@ class GameOfLife:
                     live = self.live_neighbours(i, j)
                     if (self.old_grid[i][j] == 1 and live < 2):
                         self.new_grid[i][j] = 0  # Dead from starvation.
-                    elif (self.old_grid[i][j] == 1 and (live == 2 or live == 3)):
+                    elif self.old_grid[i][j] == 1 and live in [2, 3]:
                         self.new_grid[i][j] = 1  # Continue living.
                     elif (self.old_grid[i][j] == 1 and live > 3):
                         self.new_grid[i][j] = 0  # Dead from overcrowding.
@@ -155,11 +153,11 @@ class GameOfLife:
         ids = []
         for i in range(self.N):
             ids.append([])
-            for j in range(self.N):
+            for _ in range(self.N):
                 ids[i].append(0)
         while True:  # Event Loop
             event, values = self.window.read()
-            if event == sg.WIN_CLOSED or event == '-DONE-':
+            if event in [sg.WIN_CLOSED, '-DONE-']:
                 break
             self.window['-S1-OUT-'].update(values['-SLIDER-'])
             self.window['-S2-OUT-'].update(values['-SLIDER2-'])

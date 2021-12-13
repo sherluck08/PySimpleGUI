@@ -50,15 +50,15 @@ def main():
 
     window = sg.Window('Window Title', layout)
 
-    while True:             # Event Loop
+    while True:         # Event Loop
         event, values = window.read()
         sg.cprint(event, values)
-        if event == sg.WIN_CLOSED or event == 'Exit':
+        if event in [sg.WIN_CLOSED, 'Exit']:
             break
         if event.startswith('Start'):
             threading.Thread(target=the_thread, args=(window,), daemon=True).start()
         if event == THREAD_EVENT:
-            sg.cprint(f'Data from the thread ', colors='white on purple', end='')
+            sg.cprint('Data from the thread ', colors='white on purple', end='')
             sg.cprint(f'{values[THREAD_EVENT]}', colors='white on red')
     window.close()
 

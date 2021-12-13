@@ -45,7 +45,7 @@ while True:             # Event Loop
         # print("win2 ", event)
         if event != sg.TIMEOUT_KEY:
             print("win2 ", event)
-        if event == 'Exit' or event == sg.WIN_CLOSED:
+        if event in ['Exit', sg.WIN_CLOSED]:
             # print("Closing window 2", event)
             win2_active = False
             window2.close()

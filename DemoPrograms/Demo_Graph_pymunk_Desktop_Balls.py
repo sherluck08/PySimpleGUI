@@ -38,7 +38,7 @@ class Playfield():
         self.space.add(ground_shape)
 
     def add_balls(self, num_balls = 30):
-        for i in range(1, num_balls):
+        for _ in range(1, num_balls):
             x = random.randint(0, self.screensize[0])
             y = random.randint(0, self.screensize[1])
             r = random.randint(5, 10)

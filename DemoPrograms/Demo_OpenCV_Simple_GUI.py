@@ -44,7 +44,7 @@ def main():
 
     while True:
         event, values = window.read(timeout=20)
-        if event == 'Exit' or event == sg.WIN_CLOSED:
+        if event in ['Exit', sg.WIN_CLOSED]:
             break
 
         ret, frame = cap.read()

@@ -57,7 +57,7 @@ window = sg.Window('Window Title', layout)
 while True:
     event, values = window.read()
 
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
     if event == 'Go':
         sg.user_settings_set_entry('-filenames-', list(set(sg.user_settings_get_entry('-filenames-', []) + [values['-FILENAME-'], ])))

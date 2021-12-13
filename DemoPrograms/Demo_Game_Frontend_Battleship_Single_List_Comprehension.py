@@ -9,9 +9,20 @@ def Battleship():
     layout =   [[sg.Text('BATTLESHIP', font='Default 25')],
                [sg.Text(size=(15,1), key='-MESSAGE-', font='Default 20')]]
     # Build the "board", a grid of Buttons
-    board = []
-    for row in range(MAX_ROWS):
-        board.append([sg.Button(str('O'), size=(4, 2), pad=(0,0), border_width=0, key=(row,col)) for col in range(MAX_COL)])
+    board = [
+        [
+            sg.Button(
+                str('O'),
+                size=(4, 2),
+                pad=(0, 0),
+                border_width=0,
+                key=(row, col),
+            )
+            for col in range(MAX_COL)
+        ]
+        for row in range(MAX_ROWS)
+    ]
+
     # Add the board and the exit button to the layout
     layout +=  board
     # Add the exit button as the last row

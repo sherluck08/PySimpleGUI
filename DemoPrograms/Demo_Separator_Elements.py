@@ -32,6 +32,6 @@ window = sg.Window('Window Title', layout)
 while True:             # Event Loop
     event, values = window.read()
     print(event, values)
-    if event == sg.WIN_CLOSED or event == 'Exit':
+    if event in [sg.WIN_CLOSED, 'Exit']:
         break
 window.close()

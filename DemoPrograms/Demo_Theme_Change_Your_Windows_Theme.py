@@ -26,7 +26,7 @@ def main():
 
     while True:
         event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == 'Exit':
+        if event in [sg.WINDOW_CLOSED, 'Exit']:
             break
         if event == 'Change Theme':      # Theme button clicked, so get new theme and restart window
             event, values = sg.Window('Choose Theme', [[sg.Combo(sg.theme_list(), readonly=True, k='-THEME LIST-'), sg.OK(), sg.Cancel()]]).read(close=True)
